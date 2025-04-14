@@ -2,7 +2,6 @@ package models
 
 import (
 	"math"
-	"sync"
 	"time"
 )
 
@@ -19,8 +18,8 @@ type Directory struct {
 	Score     Score
 }
 
-// NewDirectory creates a new Directory instance with the given path, current time as LastVisit, and a default frecency score.
-func NewDirectory(path string) *Directory {
+// NewDirecotry creates a new Directory instance with the given path, current time as LastVisit, and a default frecency score.
+func NewDirecotry(path string) *Directory {
 	return &Directory{
 		path,
 		Age(time.Now().Unix()),
@@ -46,32 +45,8 @@ func WeighFrecency(dir *Directory) float64 {
 
 	elapsedDays := elapsedTime.Hours() / 24.0
 
-	decayFactor := math.Exp(-halfLifeDecay * elapsedDays)
+	decayFactor := math.Exp(-0.693 * elapsedDays)
 
 	// Return the frecency score
 	return float64(dir.Score) * decayFactor
-}
-
-// DirectoryManager manages a list of Directory instances.
-type DirectoryManager struct {
-	dirs  []Directory
-	dirty bool
-	mu    sync.RWMutex // For concurrent access
-}
-
-// NewDirManager creates a new DirManager instance.
-func NewDirectoryManager() *DirectoryManager {
-	return &DirectoryManager{
-		dirs:  make([]Directory, 0),
-		dirty: false,
-	}
-}
-
-// AddDirectory adds a new Directory to the DirManager.
-func (dm *DirectoryManager) AddDirectory(path string) {
-	dm.mu.Lock()
-	defer dm.mu.Unlock()
-
-	dm.dirs = append(dm.dirs, *NewDirectory(path))
-	dm.dirty = true
 }
