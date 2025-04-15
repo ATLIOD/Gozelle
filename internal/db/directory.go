@@ -1,12 +1,9 @@
 package db
 
 import (
-	"math"
 	"sync"
 	"time"
 )
-
-const halfLifeDecay = 0.693
 
 type (
 	Score float64
@@ -38,25 +35,11 @@ func UpdateScore(dir *Directory) {
 	dir.Score *= 2
 }
 
-// WeighFrecency calculates the frecency score of a Directory instance based on its LastVisit time and Score.
-func WeighFrecency(dir *Directory) float64 {
-	lastVisitTime := time.Unix(int64(dir.LastVisit), 0) // Convert age to int64 then to time.Time
-
-	elapsedTime := time.Since(lastVisitTime)
-
-	elapsedDays := elapsedTime.Hours() / 24.0
-
-	decayFactor := math.Exp(-halfLifeDecay * elapsedDays)
-
-	// Return the frecency score
-	return float64(dir.Score) * decayFactor
-}
-
 // DirectoryManager manages a list of Directory instances.
 type DirectoryManager struct {
 	dirs  []Directory
 	dirty bool
-	mu    sync.RWMutex // For concurrent access
+	mu    sync.RWMutex
 }
 
 // NewDirManager creates a new DirManager instance.
