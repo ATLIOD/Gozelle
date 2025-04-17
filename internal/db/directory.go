@@ -1,7 +1,6 @@
 package db
 
 import (
-	"sync"
 	"time"
 )
 
@@ -33,28 +32,4 @@ func UpdateLastVisit(dir *Directory) {
 // UpdateScore updates the Score field of the Directory instance by multiplying it by 2.
 func UpdateScore(dir *Directory) {
 	dir.Score *= 2
-}
-
-// DirectoryManager manages a list of Directory instances.
-type DirectoryManager struct {
-	dirs  []Directory
-	dirty bool
-	mu    sync.RWMutex
-}
-
-// NewDirManager creates a new DirManager instance.
-func NewDirectoryManager() *DirectoryManager {
-	return &DirectoryManager{
-		dirs:  make([]Directory, 0),
-		dirty: false,
-	}
-}
-
-// AddDirectory adds a new Directory to the DirManager.
-func (dm *DirectoryManager) AddDirectory(path string) {
-	dm.mu.Lock()
-	defer dm.mu.Unlock()
-
-	dm.dirs = append(dm.dirs, *NewDirectory(path))
-	dm.dirty = true
 }
