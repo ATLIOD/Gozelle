@@ -1,6 +1,6 @@
 package db
 
-type DirectoryManager interface {
+type DataStore interface {
 	Open(filePath string) (*[]byte, error)
 	Decode(data *[]byte) (map[string]*Directory, error)
 	Encode() ([]byte, error)
@@ -33,7 +33,7 @@ func NewDirectoryManager(filePath string) (*directoryManager, error) {
 
 	dm.raw = *rawgob
 
-	dm.Entries, err = DirectoryManager(dm).Decode(rawgob)
+	dm.Entries, err = dm.Decode(rawgob)
 	if err != nil {
 		return nil, err
 	}
