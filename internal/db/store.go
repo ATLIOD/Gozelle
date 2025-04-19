@@ -1,5 +1,10 @@
 package db
 
+import (
+	"fmt"
+	"os"
+)
+
 type DataStore interface {
 	Open(filePath string) (*[]byte, error)
 	Decode(data *[]byte) (map[string]*Directory, error)
@@ -42,7 +47,18 @@ func NewDirectoryManager(filePath string) (*directoryManager, error) {
 }
 
 func (dm *directoryManager) Open(filePath string) (*[]byte, error) {
-	return nil, nil
+	// Check if the file exists
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("file does not exist: %s", filePath)
+	}
+
+	// Read the file's contents
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %w", err)
+	}
+
+	return &data, nil
 }
 
 func (dm *directoryManager) Decode(data *[]byte) (map[string]*Directory, error) {
