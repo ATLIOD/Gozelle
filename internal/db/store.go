@@ -17,7 +17,6 @@ type DataStore interface {
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
 	Save() error
-	Load() error
 }
 
 type DirectoryManager struct {
@@ -96,22 +95,22 @@ func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// add new directory to directory manager and updates the file
 func (dm *DirectoryManager) Add(path string) error {
 	return nil
 }
 
+// gets a directory from the directory manager
 func (dm *DirectoryManager) Get(path string) (*Directory, error) {
 	return nil, nil
 }
 
+// gets all directories from the directory manager
 func (dm *DirectoryManager) All() ([]Directory, error) {
 	return nil, nil
 }
 
+// saves the directory manager to a file
 func (dm *DirectoryManager) Save() error {
-	return nil
-}
-
-func (dm *DirectoryManager) Load() error {
 	return nil
 }
