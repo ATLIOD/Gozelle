@@ -3,14 +3,16 @@ package db
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"os"
+	"sync"
 )
 
 type DataStore interface {
 	Open(filePath string) (*[]byte, error)
-	Decode(data *[]byte) (map[string]*Directory, error)
-	Encode() ([]byte, error)
+	Decode(data *[]byte) error
+	Encode(entries []*Directory) ([]byte, error)
 	Add(path string) error
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
@@ -18,18 +20,19 @@ type DataStore interface {
 	Load() error
 }
 
-type directoryManager struct {
-	Entries  map[string]*Directory
+type DirectoryManager struct {
+	Entries  []*Directory
 	FilePath string
 	dirty    bool
 	raw      []byte
+	mu       sync.RWMutex
 }
 
 // NewDirectoryManager creates a new GobStore instance by accessing  reading in data from the given filepath.
-func NewDirectoryManager(filePath string) (*directoryManager, error) {
-	dm := &directoryManager{
+func NewDirectoryManager(filePath string) (*DirectoryManager, error) {
+	dm := &DirectoryManager{
 		FilePath: filePath,
-		Entries:  make(map[string]*Directory),
+		Entries:  []*Directory{},
 		dirty:    false,
 	}
 
@@ -40,7 +43,7 @@ func NewDirectoryManager(filePath string) (*directoryManager, error) {
 
 	dm.raw = *rawgob
 
-	dm.Entries, err = dm.Decode(rawgob)
+	err = dm.Decode(rawgob)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,7 @@ func NewDirectoryManager(filePath string) (*directoryManager, error) {
 	return dm, nil
 }
 
-func (dm *directoryManager) Open(filePath string) (*[]byte, error) {
+func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
 	// Check if the file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("file does not exist: %s", filePath)
@@ -63,51 +66,52 @@ func (dm *directoryManager) Open(filePath string) (*[]byte, error) {
 	return &data, nil
 }
 
-func (dm *directoryManager) Decode(data *[]byte) (map[string]*Directory, error) {
-	// buffer to read into
-	buf := bytes.NewReader(*data)
-	decoder := gob.NewDecoder(buf)
+// Decode decodes the data from the byte slice into the DirectoryManager's Entries field.
+func (dm *DirectoryManager) Decode(data *[]byte) error {
+	decoder := gob.NewDecoder(bytes.NewReader(*data))
 
-	var decodedData map[string]*Directory
-
-	// decode data
-	if err := decoder.Decode(&decodedData); err != nil {
-		return nil, fmt.Errorf("failed to decode data: %w", err)
+	// decode datainto directory slice
+	var decodedEntries []*Directory
+	err := decoder.Decode(&decodedEntries)
+	if err != nil {
+		return errors.New("failed to decode data: " + err.Error())
 	}
 
-	return decodedData, nil
+	dm.Entries = decodedEntries
+
+	return nil
 }
 
-func (dm *directoryManager) Encode(data map[string]*Directory) ([]byte, error) {
-	// make buffer to put encoded data in
+// Encode encodes the DirectoryManager's Entries field into a byte slice.
+func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
 
-	// encode data
-	if err := encoder.Encode(data); err != nil {
-		return nil, fmt.Errorf("failed to encode data: %w", err)
+	// Encode the slice of Directory pointers into the buffer
+	err := encoder.Encode(entries)
+	if err != nil {
+		return nil, errors.New("failed to encode Entries: " + err.Error())
 	}
 
-	// return encoded data
 	return buf.Bytes(), nil
 }
 
-func (dm *directoryManager) Add(path string) error {
+func (dm *DirectoryManager) Add(path string) error {
 	return nil
 }
 
-func (dm *directoryManager) Get(path string) (*Directory, error) {
+func (dm *DirectoryManager) Get(path string) (*Directory, error) {
 	return nil, nil
 }
 
-func (dm *directoryManager) All() ([]Directory, error) {
+func (dm *DirectoryManager) All() ([]Directory, error) {
 	return nil, nil
 }
 
-func (dm *directoryManager) Save() error {
+func (dm *DirectoryManager) Save() error {
 	return nil
 }
 
-func (dm *directoryManager) Load() error {
+func (dm *DirectoryManager) Load() error {
 	return nil
 }
