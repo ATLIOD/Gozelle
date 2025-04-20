@@ -1,6 +1,8 @@
 package db
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"os"
 )
@@ -62,11 +64,32 @@ func (dm *directoryManager) Open(filePath string) (*[]byte, error) {
 }
 
 func (dm *directoryManager) Decode(data *[]byte) (map[string]*Directory, error) {
-	return nil, nil
+	// buffer to read into
+	buf := bytes.NewReader(*data)
+	decoder := gob.NewDecoder(buf)
+
+	var decodedData map[string]*Directory
+
+	// decode data
+	if err := decoder.Decode(&decodedData); err != nil {
+		return nil, fmt.Errorf("failed to decode data: %w", err)
+	}
+
+	return decodedData, nil
 }
 
-func (dm *directoryManager) Encode() ([]byte, error) {
-	return nil, nil
+func (dm *directoryManager) Encode(data map[string]*Directory) ([]byte, error) {
+	// make buffer to put encoded data in
+	var buf bytes.Buffer
+	encoder := gob.NewEncoder(&buf)
+
+	// encode data
+	if err := encoder.Encode(data); err != nil {
+		return nil, fmt.Errorf("failed to encode data: %w", err)
+	}
+
+	// return encoded data
+	return buf.Bytes(), nil
 }
 
 func (dm *directoryManager) Add(path string) error {
