@@ -67,6 +67,8 @@ func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
 
 // Decode decodes the data from the byte slice into the DirectoryManager's Entries field.
 func (dm *DirectoryManager) Decode(data *[]byte) error {
+	dm.mu.RLock()
+	defer dm.mu.RUnlock()
 	decoder := gob.NewDecoder(bytes.NewReader(*data))
 
 	// decode datainto directory slice
@@ -83,6 +85,8 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 
 // Encode encodes the DirectoryManager's Entries field into a byte slice.
 func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
+	dm.mu.RLock()
+	defer dm.mu.RUnlock()
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
 
@@ -97,20 +101,58 @@ func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
 
 // add new directory to directory manager and updates the file
 func (dm *DirectoryManager) Add(path string) error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	dir := NewDirectory(path)
+	dm.Entries = append(dm.Entries, dir)
+	dm.dirty = true
+	if err := dm.Save(); err != nil {
+		return fmt.Errorf("failed to save directory manager: %w", err)
+	}
 	return nil
 }
 
 // gets a directory from the directory manager
 func (dm *DirectoryManager) Get(path string) (*Directory, error) {
-	return nil, nil
+	dm.mu.RLock()
+	defer dm.mu.RUnlock()
+	for _, dir := range dm.Entries {
+		if dir.Path == path {
+			return dir, nil
+		}
+	}
+	return nil, fmt.Errorf("directory not found: %s", path)
 }
 
 // gets all directories from the directory manager
-func (dm *DirectoryManager) All() ([]Directory, error) {
-	return nil, nil
+func (dm *DirectoryManager) All() ([]*Directory, error) {
+	dm.mu.RLock()
+	defer dm.mu.RUnlock()
+	if len(dm.Entries) > 0 {
+		return dm.Entries, nil
+	}
+	// if no entries are found, return an empty slice
+	return nil, fmt.Errorf("no directories found")
 }
 
 // saves the directory manager to a file
 func (dm *DirectoryManager) Save() error {
+	dm.mu.RLock()
+	defer dm.mu.Unlock()
+	if !dm.dirty {
+		return nil
+	}
+	encodedData, err := dm.Encode(dm.Entries)
+	if err != nil {
+		return fmt.Errorf("failed to encode directory manager: %w", err)
+	}
+	err = os.WriteFile(dm.FilePath, encodedData, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write to file: %w", err)
+	}
+	dm.dirty = false
+	// update the raw data after saving
+	dm.raw, _ = dm.Encode(dm.Entries)
+
 	return nil
 }
