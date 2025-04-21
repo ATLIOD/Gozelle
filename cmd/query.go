@@ -5,10 +5,11 @@ import (
 	"Gozelle/internal/db"
 	"runtime"
 	"sync"
+	"time"
 )
 
 type ScoredMatch struct {
-	Path     string
+	Path     *db.Directory
 	Frecency float64
 }
 
@@ -50,6 +51,8 @@ func QueryTop(keywords []string) ScoredMatch {
 			bestMatch = match
 		}
 	}
+	bestMatch.Path.LastVisit = db.Age(time.Now().Unix())
+	bestMatch.Path.Score += 1
 	return bestMatch
 }
 
@@ -58,7 +61,7 @@ func worker(jobs <-chan *db.Directory, results chan<- ScoredMatch, keywords []st
 	for dir := range jobs {
 		if core.MatchByKeywords(dir.Path, keywords) {
 			score := core.WeighFrecency(dir)
-			results <- ScoredMatch{Path: dir.Path, Frecency: score}
+			results <- ScoredMatch{Path: dir, Frecency: score}
 		}
 	}
 }

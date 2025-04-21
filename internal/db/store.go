@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -51,7 +52,7 @@ func NewDirectoryManagerWithPath(filePath string) (*DirectoryManager, error) {
 }
 
 func NewDirectoryManager() (*DirectoryManager, error) {
-	filePath := os.Getenv("DATA_DIR") + "/db.gob"
+	filePath := os.Getenv("DATA_DIR") + "/Gozelle/db.gob"
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},
@@ -74,12 +75,21 @@ func NewDirectoryManager() (*DirectoryManager, error) {
 }
 
 func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
-	// Check if the file exists
+	// check if the file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("file does not exist: %s", filePath)
+		// check directory exists
+		dir := filepath.Dir(filePath)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, fmt.Errorf("failed to create directories: %w", err)
+		}
+
+		// create an empty file
+		if err := os.WriteFile(filePath, []byte{}, 0644); err != nil {
+			return nil, fmt.Errorf("failed to create file: %w", err)
+		}
 	}
 
-	// Read the file's contents
+	// read the file's contents
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
