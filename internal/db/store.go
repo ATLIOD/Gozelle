@@ -28,7 +28,30 @@ type DirectoryManager struct {
 }
 
 // NewDirectoryManager creates a new GobStore instance by accessing  reading in data from the given filepath.
-func NewDirectoryManager(filePath string) (*DirectoryManager, error) {
+func NewDirectoryManagerWithPath(filePath string) (*DirectoryManager, error) {
+	dm := &DirectoryManager{
+		FilePath: filePath,
+		Entries:  []*Directory{},
+		dirty:    false,
+	}
+
+	rawgob, err := dm.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	dm.raw = *rawgob
+
+	err = dm.Decode(rawgob)
+	if err != nil {
+		return nil, err
+	}
+
+	return dm, nil
+}
+
+func NewDirectoryManager() (*DirectoryManager, error) {
+	filePath := os.Getenv("DATA_DIR") + "/db.gob"
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},

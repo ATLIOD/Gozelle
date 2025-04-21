@@ -13,7 +13,11 @@ type ScoredMatch struct {
 }
 
 // QueryTop searches for the best match in the directories based on keywords.
-func QueryTop(dirs []*db.Directory, keywords []string) ScoredMatch {
+func QueryTop(keywords []string) ScoredMatch {
+	database, err := db.NewDirectoryManager()
+	if err != nil {
+		panic(err)
+	}
 	jobs := make(chan *db.Directory)
 	results := make(chan ScoredMatch)
 	var wg sync.WaitGroup
@@ -27,7 +31,7 @@ func QueryTop(dirs []*db.Directory, keywords []string) ScoredMatch {
 
 	// feed jobs
 	go func() {
-		for _, dir := range dirs {
+		for _, dir := range database.Entries {
 			jobs <- dir
 		}
 		close(jobs)
