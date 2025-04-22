@@ -124,7 +124,8 @@ This project is a hands-on learning opportunity for:
 - [ ] Zsh / Fish support  
 - [ ] Interactive `fzf`-style selector  
 - [ ] Configurable data file location  
-- [ ] Directory expiration / pruning logic  
+- [ ] Directory expiration / pruning logic
+- [ ] Man Pages
 - [ ] Completion support
 
 [↑ Back to top](#-gozelle)
