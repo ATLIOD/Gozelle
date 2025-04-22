@@ -131,6 +131,6 @@ This project is a hands-on learning opportunity for:
 
 ## 📄 License
 
-MIT License
+GPL 3.0
 
 [↑ Back to top](#-gozelle)
