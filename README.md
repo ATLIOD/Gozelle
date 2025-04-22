@@ -1,10 +1,10 @@
-# 🦌 Gozelle
+# Gozelle
 
 **Gozelle** is a lightning-fast, minimal directory-jumping tool written in Go — inspired by [`zoxide`](https://github.com/ajeetdsouza/zoxide). Jump to frequently used directories with just a keyword, powered by **frecency scoring**, **fuzzy matching**, and **shell integration**.
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [Features](#-features)
 - [Requirements](#️-requirements)
@@ -17,7 +17,7 @@
 
 ---
 
-## ✨ Features
+## Features
 
 - **Frecency Scoring** — jump history is ranked by frequency and recency  
 - **Fuzzy Matching** — jump with just a keyword or part of a directory name  
@@ -31,7 +31,7 @@
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 - [Bash](https://www.gnu.org/software/bash/) shell  
 - Gozelle binary in your `$PATH`  
@@ -40,7 +40,7 @@
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Build from Source
 
@@ -67,7 +67,7 @@ source ~/.bashrc
 
 ---
 
-## 🏃 Usage
+## Usage
 
 ### Jump to a Directory
 
@@ -91,7 +91,7 @@ gz add /some/path/to/add
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 - Enables shell hooks for automatic logging via `init bash`
 - Tracks every visited directory using the shell hook
@@ -103,7 +103,7 @@ gz add /some/path/to/add
 
 ---
 
-## 🧪 Learnings & Concepts
+## Learnings & Concepts
 
 This project is a hands-on learning opportunity for:
 
@@ -117,7 +117,7 @@ This project is a hands-on learning opportunity for:
 
 ---
 
-## 📌 Roadmap
+## Roadmap
 
 - [ ] Zsh / Fish support  
 - [ ] Interactive `fzf`-style selector  
