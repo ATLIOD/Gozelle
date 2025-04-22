@@ -80,13 +80,13 @@ gz proj       # jumps to the best match (e.g., ~/projects)
 ### Show Matching Directories (without jumping)
 
 ```bash
-gz query proj
+gozelle query proj
 ```
 
 ### Add a Directory Manually
 
 ```bash
-gz add /some/path/to/add
+gozelle add /some/path/to/add
 ```
 
 [↑ Back to top](#-gozelle)
