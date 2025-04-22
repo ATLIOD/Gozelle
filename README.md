@@ -34,7 +34,9 @@
 ## Requirements
 
 - [Bash](https://www.gnu.org/software/bash/) shell  
-- Gozelle binary in your `$PATH`  
+- Gozelle binary in your `$PATH`
+- go version 1.24+
+
 
 [↑ Back to top](#-gozelle)
 
