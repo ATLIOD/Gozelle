@@ -3,9 +3,9 @@ package cmd
 import (
 	"Gozelle/internal/core"
 	"Gozelle/internal/db"
+	"log"
 	"runtime"
 	"sync"
-	"time"
 )
 
 type ScoredMatch struct {
@@ -51,8 +51,13 @@ func QueryTop(keywords []string) ScoredMatch {
 			bestMatch = match
 		}
 	}
-	bestMatch.Path.LastVisit = db.Age(time.Now().Unix())
-	bestMatch.Path.Score += 1
+	bestMatch.Path.UpdateLastVisit()
+	bestMatch.Path.UpdateScore()
+	database.Dirty = true
+	if err := database.Save(); err != nil {
+		log.Println("Error saving database:", err)
+		panic(err)
+	}
 	return bestMatch
 }
 

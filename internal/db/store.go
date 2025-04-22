@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -23,7 +24,7 @@ type DataStore interface {
 type DirectoryManager struct {
 	Entries  []*Directory
 	FilePath string
-	dirty    bool
+	Dirty    bool
 	raw      []byte
 	mu       sync.RWMutex
 }
@@ -33,7 +34,7 @@ func NewDirectoryManagerWithPath(filePath string) (*DirectoryManager, error) {
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},
-		dirty:    false,
+		Dirty:    false,
 	}
 
 	rawgob, err := dm.Open(filePath)
@@ -52,11 +53,21 @@ func NewDirectoryManagerWithPath(filePath string) (*DirectoryManager, error) {
 }
 
 func NewDirectoryManager() (*DirectoryManager, error) {
-	filePath := os.Getenv("DATA_DIR") + "/Gozelle/db.gob"
+	dataDir := os.Getenv("XDG_DATA_HOME")
+	if dataDir == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, fmt.Errorf("could not get user home directory: %w", err)
+		}
+		dataDir = filepath.Join(homeDir, ".local", "share")
+	}
+
+	filePath := filepath.Join(dataDir, "Gozelle", "db.gob")
+	log.Println("Using file path:", filePath)
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},
-		dirty:    false,
+		Dirty:    false,
 	}
 
 	rawgob, err := dm.Open(filePath)
@@ -80,6 +91,7 @@ func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
 		// check directory exists
 		dir := filepath.Dir(filePath)
 		if err := os.MkdirAll(dir, 0755); err != nil {
+			log.Println("Error creating directory:", filePath)
 			return nil, fmt.Errorf("failed to create directories: %w", err)
 		}
 
@@ -102,6 +114,13 @@ func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
 func (dm *DirectoryManager) Decode(data *[]byte) error {
 	dm.mu.RLock()
 	defer dm.mu.RUnlock()
+
+	if data == nil || len(*data) == 0 {
+		dm.Entries = []*Directory{}
+		log.Println("No data found, initializing empty directory manager.")
+		return nil
+	}
+
 	decoder := gob.NewDecoder(bytes.NewReader(*data))
 
 	// decode datainto directory slice
@@ -113,13 +132,12 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 
 	dm.Entries = decodedEntries
 
+	log.Println("Decoded entries:", dm.Entries)
 	return nil
 }
 
 // Encode encodes the DirectoryManager's Entries field into a byte slice.
 func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
-	dm.mu.RLock()
-	defer dm.mu.RUnlock()
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
 
@@ -136,9 +154,10 @@ func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
 func (dm *DirectoryManager) Add(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
+
 	dir := NewDirectory(path)
 	dm.Entries = append(dm.Entries, dir)
-	dm.dirty = true
+	dm.Dirty = true
 	if err := dm.Save(); err != nil {
 		return fmt.Errorf("failed to save directory manager: %w", err)
 	}
@@ -170,9 +189,7 @@ func (dm *DirectoryManager) All() ([]*Directory, error) {
 
 // saves the directory manager to a file
 func (dm *DirectoryManager) Save() error {
-	dm.mu.RLock()
-	defer dm.mu.Unlock()
-	if !dm.dirty {
+	if !dm.Dirty {
 		return nil
 	}
 	encodedData, err := dm.Encode(dm.Entries)
@@ -183,7 +200,7 @@ func (dm *DirectoryManager) Save() error {
 	if err != nil {
 		return fmt.Errorf("failed to write to file: %w", err)
 	}
-	dm.dirty = false
+	dm.Dirty = false
 	// update the raw data after saving
 	dm.raw, _ = dm.Encode(dm.Entries)
 
