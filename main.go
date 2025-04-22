@@ -1,23 +1,31 @@
 package main
 
 import (
-	"Gozelle/cmd"
 	"fmt"
+	"gozelle/cmd"
+	"log"
 	"os"
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: Gozelle <command> [arguments]")
+		fmt.Println("Commands: init, query, add, remove, list, help")
+		os.Exit(1)
+	}
+
 	keywords := os.Args[2:]
 
 	switch os.Args[1] {
+	case "init":
+		cmd.InitCmd.Run(cmd.InitCmd, keywords)
 	case "query":
 		// Call the query function
 		result := cmd.QueryTop(keywords)
-		fmt.Printf("Best match: %s\n", result.Path.Path)
-		fmt.Printf("Frecency: %f\n", result.Frecency)
-		fmt.Printf("Last visit: %d\n", result.Path.LastVisit)
-		fmt.Printf("Score: %f\n", result.Path.Score)
-
+		log.Println("Best match:", result.Path.Path)
+		log.Println("Frecency:", result.Frecency)
+		log.Println("Last visit:", result.Path.LastVisit)
+		log.Println("Score:", result.Path.Score)
 	case "add":
 		// Call the add function
 		cmd.Add(os.Args[2])
@@ -27,5 +35,8 @@ func main() {
 		// Call the list function
 	case "help":
 		// Call the help function
+	default:
+		fmt.Printf("Unknown command: %s\n", os.Args[1])
+		os.Exit(1)
 	}
 }

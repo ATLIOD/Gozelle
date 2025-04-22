@@ -7,7 +7,7 @@ func MatchByKeywords(path string, keywords []string) bool {
 	path = strings.ToLower(path)
 	lastIdx := -1
 	for _, keyword := range keywords {
-		idx := strings.Index(path[lastIdx+1:], keyword)
+		idx := strings.Index(path[lastIdx+1:], strings.ToLower(keyword))
 		if idx == -1 {
 			return false
 		}

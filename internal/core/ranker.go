@@ -1,7 +1,7 @@
 package core
 
 import (
-	"Gozelle/internal/db"
+	"gozelle/internal/db"
 	"math"
 	"time"
 )

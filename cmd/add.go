@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"Gozelle/internal/db"
 	"fmt"
+	"gozelle/internal/db"
 )
 
 func Add(path string) {
