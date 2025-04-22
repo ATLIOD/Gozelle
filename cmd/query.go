@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"Gozelle/internal/core"
-	"Gozelle/internal/db"
+	"fmt"
+	"gozelle/internal/core"
+	"gozelle/internal/db"
 	"log"
 	"runtime"
 	"sync"
@@ -58,6 +59,7 @@ func QueryTop(keywords []string) ScoredMatch {
 		log.Println("Error saving database:", err)
 		panic(err)
 	}
+	fmt.Print(bestMatch.Path.Path)
 	return bestMatch
 }
 
