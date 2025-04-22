@@ -3,17 +3,22 @@ package cmd
 import (
 	"Gozelle/internal/core"
 	"Gozelle/internal/db"
+	"log"
 	"runtime"
 	"sync"
 )
 
 type ScoredMatch struct {
-	Path     string
+	Path     *db.Directory
 	Frecency float64
 }
 
 // QueryTop searches for the best match in the directories based on keywords.
-func QueryTop(dirs []*db.Directory, keywords []string) ScoredMatch {
+func QueryTop(keywords []string) ScoredMatch {
+	database, err := db.NewDirectoryManager()
+	if err != nil {
+		panic(err)
+	}
 	jobs := make(chan *db.Directory)
 	results := make(chan ScoredMatch)
 	var wg sync.WaitGroup
@@ -27,7 +32,7 @@ func QueryTop(dirs []*db.Directory, keywords []string) ScoredMatch {
 
 	// feed jobs
 	go func() {
-		for _, dir := range dirs {
+		for _, dir := range database.Entries {
 			jobs <- dir
 		}
 		close(jobs)
@@ -46,6 +51,13 @@ func QueryTop(dirs []*db.Directory, keywords []string) ScoredMatch {
 			bestMatch = match
 		}
 	}
+	bestMatch.Path.UpdateLastVisit()
+	bestMatch.Path.UpdateScore()
+	database.Dirty = true
+	if err := database.Save(); err != nil {
+		log.Println("Error saving database:", err)
+		panic(err)
+	}
 	return bestMatch
 }
 
@@ -54,7 +66,7 @@ func worker(jobs <-chan *db.Directory, results chan<- ScoredMatch, keywords []st
 	for dir := range jobs {
 		if core.MatchByKeywords(dir.Path, keywords) {
 			score := core.WeighFrecency(dir)
-			results <- ScoredMatch{Path: dir.Path, Frecency: score}
+			results <- ScoredMatch{Path: dir, Frecency: score}
 		}
 	}
 }

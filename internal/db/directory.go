@@ -25,11 +25,11 @@ func NewDirectory(path string) *Directory {
 }
 
 // UpdateLastVisit updates the LastVisit field of the Directory instance to the current time.
-func UpdateLastVisit(dir *Directory) {
-	dir.LastVisit = Age(time.Now().Unix())
+func (d *Directory) UpdateLastVisit() {
+	d.LastVisit = Age(time.Now().Unix())
 }
 
 // UpdateScore updates the Score field of the Directory instance by multiplying it by 2.
-func UpdateScore(dir *Directory) {
-	dir.Score *= 2
+func (d *Directory) UpdateScore() {
+	d.Score *= 2
 }
