@@ -23,4 +23,5 @@ func Add(path string) {
 		fmt.Println("Error saving database:", err)
 		panic(err)
 	}
+	fmt.Print("Path added successfully: ", path, "\n")
 }
