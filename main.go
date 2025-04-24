@@ -23,9 +23,9 @@ func main() {
 		// Call the query function
 		result := cmd.QueryTop(keywords)
 		log.Println("Best match:", result.Path.Path)
-		log.Println("Frecency:", result.Frecency)
-		log.Println("Last visit:", result.Path.LastVisit)
-		log.Println("Score:", result.Path.Score)
+		// log.Println("Frecency:", result.Frecency)
+		// log.Println("Last visit:", result.Path.LastVisit)
+		// log.Println("Score:", result.Path.Score)
 	case "add":
 		// Call the add function
 		cmd.Add(os.Args[2])

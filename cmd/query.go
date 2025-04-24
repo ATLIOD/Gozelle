@@ -52,6 +52,10 @@ func QueryTop(keywords []string) ScoredMatch {
 			bestMatch = match
 		}
 	}
+	if bestMatch.Path == nil {
+		fmt.Println("No match found")
+		return bestMatch
+	}
 	bestMatch.Path.UpdateLastVisit()
 	bestMatch.Path.UpdateScore()
 	database.Dirty = true
