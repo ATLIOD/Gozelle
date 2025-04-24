@@ -31,5 +31,5 @@ func (d *Directory) UpdateLastVisit() {
 
 // UpdateScore updates the Score field of the Directory instance by multiplying it by 2.
 func (d *Directory) UpdateScore() {
-	d.Score *= 2
+	d.Score *= 1.05
 }
