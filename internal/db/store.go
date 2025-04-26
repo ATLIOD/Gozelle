@@ -19,6 +19,13 @@ type DataStore interface {
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
 	Save() error
+	// new methods
+	Dedup() error
+	SortByDirectory() error
+	AddUpdate(dir *Directory) error
+	Remove(dir *Directory) error
+	DetermineFilthy() error
+	SwapRemove(dir *Directory) error
 }
 
 type DirectoryManager struct {
@@ -204,5 +211,35 @@ func (dm *DirectoryManager) Save() error {
 	// update the raw data after saving
 	dm.raw, _ = dm.Encode(dm.Entries)
 
+	return nil
+}
+
+// Dedup removes duplicate directories from the directory manager
+func (dm *DirectoryManager) Dedup() error {
+	return nil
+}
+
+// SortByDirectory sorts the directories in the directory manager by their path
+func (dm *DirectoryManager) SortByDirectory() error {
+	return nil
+}
+
+// AddUpdate adds or updates a directory in the directory manager
+func (dm *DirectoryManager) AddUpdate(dir *Directory) error {
+	return nil
+}
+
+// Remove removes a directory from the directory manager
+func (dm *DirectoryManager) Remove(dir *Directory) error {
+	return nil
+}
+
+// DetermineFilthy checks if the directory manager is dirty
+func (dm *DirectoryManager) DetermineFilthy() error {
+	return nil
+}
+
+// SwapRemove removes a directory from the directory manager and updates the file
+func (dm *DirectoryManager) SwapRemove(dir *Directory) error {
 	return nil
 }
