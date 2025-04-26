@@ -19,7 +19,6 @@ type DataStore interface {
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
 	Save() error
-	// new methods
 	Dedup() error
 	SortByDirectory() error
 	AddUpdate(dir *Directory) error
@@ -265,6 +264,15 @@ func (dm *DirectoryManager) Remove(dir *Directory) error {
 
 // DetermineFilthy checks if the directory manager is dirty
 func (dm *DirectoryManager) DetermineFilthy() error {
+	current, err := dm.Encode(dm.Entries)
+	if err != nil {
+		return fmt.Errorf("failed to encode directory manager: %w", err)
+	}
+	if bytes.Equal(current, dm.raw) {
+		dm.Dirty = false
+		return nil
+	}
+	dm.Dirty = true
 	return nil
 }
 
