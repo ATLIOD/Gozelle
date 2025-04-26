@@ -63,7 +63,7 @@ func NewDirectoryManager() (*DirectoryManager, error) {
 	}
 
 	filePath := filepath.Join(dataDir, "Gozelle", "db.gob")
-	log.Println("Using file path:", filePath)
+	// log.Println("Using file path:", filePath)
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},
@@ -132,7 +132,7 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 
 	dm.Entries = decodedEntries
 
-	log.Println("Decoded entries:", dm.Entries)
+	// log.Println("Decoded entries:", dm.Entries)
 	return nil
 }
 
