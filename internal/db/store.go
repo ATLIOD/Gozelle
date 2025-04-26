@@ -25,7 +25,7 @@ type DataStore interface {
 	AddUpdate(dir *Directory) error
 	Remove(dir *Directory) error
 	DetermineFilthy() error
-	SwapRemove(dir *Directory) error
+	SwapRemove(idx int) error
 }
 
 type DirectoryManager struct {
@@ -228,7 +228,7 @@ func (dm *DirectoryManager) Dedup() error {
 				dm.Entries[i].LastVisit = dm.Entries[i+1].LastVisit
 			}
 			// remove duplicate entry
-			dm.Entries = append(dm.Entries[:i+1], dm.Entries[i+2:]...)
+			dm.SwapRemove(i + 1)
 			// don't increment i, check the new i+1 again
 		} else {
 			i++
@@ -255,6 +255,11 @@ func (dm *DirectoryManager) AddUpdate(dir *Directory) error {
 
 // Remove removes a directory from the directory manager
 func (dm *DirectoryManager) Remove(dir *Directory) error {
+	dm.SortByDirectory()
+
+	idx := binarySearch(dm.Entries, dir.Path)
+
+	dm.SwapRemove(idx)
 	return nil
 }
 
@@ -264,7 +269,15 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 }
 
 // SwapRemove removes a directory from the directory manager and updates the file
-func (dm *DirectoryManager) SwapRemove(dir *Directory) error {
+// useful because it makes removal 0(1) instead of O(n)
+func (dm *DirectoryManager) SwapRemove(idx int) error {
+	if idx < 0 || idx >= len(dm.Entries) {
+		return fmt.Errorf("index out of range: %d", idx)
+	}
+	// Swap the entry with the last entry and then remove the last entry
+	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
+	dm.Entries = dm.Entries[:len(dm.Entries)-1]
+	dm.Dirty = true
 	return nil
 }
 
@@ -288,4 +301,23 @@ func partition(arr []*Directory, low, high int) int {
 	}
 	arr[i+1], arr[high] = arr[high], arr[i+1]
 	return i + 1
+}
+
+func binarySearch(arr []*Directory, target string) int {
+	low := 0
+	high := len(arr) - 1
+
+	for low <= high {
+		mid := low + (high-low)/2
+		midPath := arr[mid].Path
+
+		if midPath == target {
+			return mid
+		} else if midPath < target {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return -1 // Not found
 }
