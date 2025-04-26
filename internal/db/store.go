@@ -246,8 +246,10 @@ func (dm *DirectoryManager) SortByDirectory() error {
 	return nil
 }
 
-// AddUpdate adds or updates a directory in the directory manager
+// AddUpdate adds a directory to the directory manager and then saves it to file
 func (dm *DirectoryManager) AddUpdate(dir *Directory) error {
+	dm.Add(dir.Path)
+	dm.Save()
 	return nil
 }
 
