@@ -216,11 +216,33 @@ func (dm *DirectoryManager) Save() error {
 
 // Dedup removes duplicate directories from the directory manager
 func (dm *DirectoryManager) Dedup() error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+
+	dm.SortByDirectory()
+
+	for i := 0; i < len(dm.Entries)-1; {
+		if dm.Entries[i].Path == dm.Entries[i+1].Path {
+			dm.Entries[i].Score += dm.Entries[i+1].Score
+			if dm.Entries[i].LastVisit < dm.Entries[i+1].LastVisit {
+				dm.Entries[i].LastVisit = dm.Entries[i+1].LastVisit
+			}
+			// remove duplicate entry
+			dm.Entries = append(dm.Entries[:i+1], dm.Entries[i+2:]...)
+			// don't increment i, check the new i+1 again
+		} else {
+			i++
+		}
+	}
+	// set dirty flag to true
+	dm.Dirty = true
+
 	return nil
 }
 
 // SortByDirectory sorts the directories in the directory manager by their path
 func (dm *DirectoryManager) SortByDirectory() error {
+	quickSort(dm.Entries, 0, len(dm.Entries)-1)
 	return nil
 }
 
