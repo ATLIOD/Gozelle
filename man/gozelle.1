@@ -1,0 +1,71 @@
+.TH GOZELLE 1 "April 28, 2025" "1.0" "User Commands"
+.SH NAME
+gozelle \- Lightning-fast directory jumping tool
+.SH SYNOPSIS
+.B gozelle
+<command> [arguments]
+.SH COMMANDS
+.TP
+.B query <keyword>
+Show matching directories without jumping.
+.TP
+.B add <path>
+Add a directory to the index.
+.TP
+.B remove <path>
+Remove a directory from the index.
+.TP
+.B list
+List all indexed directories.
+.TP
+.B help
+Show help message.
+
+.SH EXAMPLES
+.TP
+.B Initialize shell integration
+.nf
+gozelle init bash
+.fi
+.TP
+.B Jump to a directory using a keyword
+.nf
+gz proj
+# jumps to the best match (e.g., ~/projects)
+.fi
+.TP
+.B Show top match without jumping
+.nf
+gozelle query proj
+.fi
+.TP
+.B Add a directory manually
+.nf
+gozelle add /some/path/to/add
+.fi
+.TP
+.B Remove a directory
+.nf
+gozelle remove /some/path/to/remove
+.fi
+.TP
+.B List all indexed directories
+.nf
+gozelle list
+.fi
+
+.SH FEATURES
+- Frecency Scoring: Jump history is ranked by frequency and recency.  
+- Fuzzy Matching: Jump with just a keyword or part of a directory name.  
+- Smart Ranking: Most relevant paths surface first.  
+- Manual Add: Add directories to the index yourself.  
+- Query Mode: List matching directories without jumping.  
+- Compact Storage: Gob-encoded data stored locally.  
+- Shell Integration: Bash command-line hooks for seamless tracking.
+
+.SH SEE ALSO
+bash(1)
+.SH Author
+Written by Atliod.
+.SH NOTES
+For more information, visit the project repository.
