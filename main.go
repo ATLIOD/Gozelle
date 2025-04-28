@@ -9,8 +9,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: Gozelle <command> [arguments]")
-		fmt.Println("Commands: init, query, add, remove, list, help")
+		cmd.HelpCmd.Run(cmd.HelpCmd, []string{})
 		os.Exit(1)
 	}
 
@@ -34,7 +33,7 @@ func main() {
 	case "list":
 		// Call the list function
 	case "help":
-		// Call the help function
+		cmd.HelpCmd.Run(cmd.HelpCmd, keywords)
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		os.Exit(1)

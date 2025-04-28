@@ -19,6 +19,12 @@ type DataStore interface {
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
 	Save() error
+	Dedup() error
+	SortByDirectory() error
+	AddUpdate(dir *Directory) error
+	Remove(dir *Directory) error
+	DetermineFilthy() error
+	SwapRemove(idx int) error
 }
 
 type DirectoryManager struct {
@@ -205,4 +211,121 @@ func (dm *DirectoryManager) Save() error {
 	dm.raw, _ = dm.Encode(dm.Entries)
 
 	return nil
+}
+
+// Dedup removes duplicate directories from the directory manager
+func (dm *DirectoryManager) Dedup() error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+
+	dm.SortByDirectory()
+
+	for i := 0; i < len(dm.Entries)-1; {
+		if dm.Entries[i].Path == dm.Entries[i+1].Path {
+			dm.Entries[i].Score += dm.Entries[i+1].Score
+			if dm.Entries[i].LastVisit < dm.Entries[i+1].LastVisit {
+				dm.Entries[i].LastVisit = dm.Entries[i+1].LastVisit
+			}
+			// remove duplicate entry
+			dm.SwapRemove(i + 1)
+			// don't increment i, check the new i+1 again
+		} else {
+			i++
+		}
+	}
+	// set dirty flag to true
+	dm.Dirty = true
+
+	return nil
+}
+
+// SortByDirectory sorts the directories in the directory manager by their path
+func (dm *DirectoryManager) SortByDirectory() error {
+	quickSort(dm.Entries, 0, len(dm.Entries)-1)
+	return nil
+}
+
+// AddUpdate adds a directory to the directory manager and then saves it to file
+func (dm *DirectoryManager) AddUpdate(dir *Directory) error {
+	dm.Add(dir.Path)
+	dm.Save()
+	return nil
+}
+
+// Remove removes a directory from the directory manager
+func (dm *DirectoryManager) Remove(dir *Directory) error {
+	dm.SortByDirectory()
+
+	idx := binarySearch(dm.Entries, dir.Path)
+
+	dm.SwapRemove(idx)
+	return nil
+}
+
+// DetermineFilthy checks if the directory manager is dirty
+func (dm *DirectoryManager) DetermineFilthy() error {
+	current, err := dm.Encode(dm.Entries)
+	if err != nil {
+		return fmt.Errorf("failed to encode directory manager: %w", err)
+	}
+	if bytes.Equal(current, dm.raw) {
+		dm.Dirty = false
+		return nil
+	}
+	dm.Dirty = true
+	return nil
+}
+
+// SwapRemove removes a directory from the directory manager and updates the file
+// useful because it makes removal 0(1) instead of O(n)
+func (dm *DirectoryManager) SwapRemove(idx int) error {
+	if idx < 0 || idx >= len(dm.Entries) {
+		return fmt.Errorf("index out of range: %d", idx)
+	}
+	// Swap the entry with the last entry and then remove the last entry
+	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
+	dm.Entries = dm.Entries[:len(dm.Entries)-1]
+	dm.Dirty = true
+	return nil
+}
+
+func quickSort(arr []*Directory, low, high int) {
+	if low < high {
+		pi := partition(arr, low, high)
+		quickSort(arr, low, pi-1)
+		quickSort(arr, pi+1, high)
+	}
+}
+
+func partition(arr []*Directory, low, high int) int {
+	pivot := arr[high]
+	i := low - 1
+
+	for j := low; j < high; j++ {
+		if arr[j].Path < pivot.Path {
+			i++
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	arr[i+1], arr[high] = arr[high], arr[i+1]
+	return i + 1
+}
+
+func binarySearch(arr []*Directory, target string) int {
+	low := 0
+	high := len(arr) - 1
+
+	for low <= high {
+		mid := low + (high-low)/2
+		midPath := arr[mid].Path
+
+		if midPath == target {
+			return mid
+		} else if midPath < target {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return -1 // Not found
 }
