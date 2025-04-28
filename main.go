@@ -37,6 +37,7 @@ func main() {
 		cmd.List()
 	case "help":
 		// Call the help function
+		cmd.HelpCmd.Run(cmd.HelpCmd, keywords)
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		cmd.HelpCmd.Run(cmd.HelpCmd, keywords)
