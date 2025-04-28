@@ -9,8 +9,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: Gozelle <command> [arguments]")
-		fmt.Println("Commands: init, query, add, remove, list, help")
+		cmd.HelpCmd.Run(cmd.HelpCmd, []string{})
 		os.Exit(1)
 	}
 
