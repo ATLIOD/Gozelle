@@ -22,7 +22,7 @@ func main() {
 	case "query":
 		// Call the query function
 		result := cmd.QueryTop(keywords)
-		log.Println("Best match:", result.Path.Path)
+		log.Println("jumped to:", result.Path.Path)
 		// log.Println("Frecency:", result.Frecency)
 		// log.Println("Last visit:", result.Path.LastVisit)
 		// log.Println("Score:", result.Path.Score)
@@ -31,12 +31,15 @@ func main() {
 		cmd.Add(os.Args[2])
 	case "remove":
 		// Call the remove function
+		cmd.Remove(os.Args[2])
 	case "list":
 		// Call the list function
+		cmd.List()
 	case "help":
 		// Call the help function
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
+		cmd.HelpCmd.Run(cmd.HelpCmd, keywords)
 		os.Exit(1)
 	}
 }
