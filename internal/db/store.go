@@ -190,7 +190,7 @@ func (dm *DirectoryManager) All() ([]*Directory, error) {
 		return dm.Entries, nil
 	}
 	// if no entries are found, return an empty slice
-	return nil, fmt.Errorf("no directories found")
+	return []*Directory{}, fmt.Errorf("no directories found")
 }
 
 // saves the directory manager to a file
@@ -281,6 +281,9 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 func (dm *DirectoryManager) SwapRemove(idx int) error {
 	if idx < 0 || idx >= len(dm.Entries) {
 		return fmt.Errorf("index out of range: %d", idx)
+	}
+	if idx == -1 {
+		return fmt.Errorf("directory not found")
 	}
 	// Swap the entry with the last entry and then remove the last entry
 	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
