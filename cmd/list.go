@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"gozelle/internal/core"
 	"gozelle/internal/db"
 )
 
@@ -14,7 +13,7 @@ func List() {
 
 	// Print the list of directories
 	for _, dir := range database.Entries {
-		fmt.Println("Path: ", dir.Path, "|Frecency:", core.WeighFrecency(dir))
+		fmt.Println("Path: ", dir.Path, "|Frequency Score:", dir.Score)
 		fmt.Println("-------------------------------------------------------------------------------")
 	}
 }
