@@ -180,9 +180,94 @@ func TestGet(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dm.dummyData()
+
+	entries, err := dm.All()
+	if err != nil {
+		t.Fatalf("failed to get all directories: %v", err)
+	}
+
+	if len(entries) != 4 {
+		t.Fatalf("expected 4 entries, got %d", len(entries))
+	}
+
+	for i, entry := range entries {
+		if entry.Path != fmt.Sprintf("/test/path%d", i+1) {
+			t.Fatalf("expected path /test/path%d, got %s", i+1, entry.Path)
+		}
+		if entry.Score != 1 {
+			t.Fatalf("expected score 1, got %f", entry.Score)
+		}
+		if entry.LastVisit == 0 {
+			t.Fatal("expected non-zero last visit time")
+		}
+	}
 }
 
 func TestDedup(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dm.dummyData()
+
+	// Add duplicate entries
+	dm.Add("/test/path1")
+	dm.Add("/test/path2")
+	dm.Add("/test/path3")
+	dm.Add("/test/path4")
+	dm.Add("/test/path1")
+	dm.Add("/test/path2")
+	dm.Add("/test/path1")
+	dm.Add("/test/path3")
+
+	err = dm.Dedup()
+	if err != nil {
+		t.Fatalf("failed to deduplicate directories: %v", err)
+	}
+
+	if len(dm.Entries) != 4 {
+		t.Fatalf("expected 4 entries after deduplication, got %d", len(dm.Entries))
+	}
+
+	if dm.Entries[0].Path != "/test/path1" {
+		t.Fatalf("expected path /test/path1, got %s", dm.Entries[0].Path)
+	}
+	if dm.Entries[1].Path != "/test/path2" {
+		t.Fatalf("expected path /test/path2, got %s", dm.Entries[1].Path)
+	}
+	if dm.Entries[2].Path != "/test/path3" {
+		t.Fatalf("expected path /test/path3, got %s", dm.Entries[2].Path)
+	}
+	if dm.Entries[3].Path != "/test/path4" {
+		t.Fatalf("expected path /test/path4, got %s", dm.Entries[3].Path)
+	}
+	if dm.Entries[0].Score != 3 {
+		t.Fatalf("expected score 3, got %f", dm.Entries[0].Score)
+	}
+	if dm.Entries[1].Score != 2 {
+		t.Fatalf("expected score 2, got %f", dm.Entries[1].Score)
+	}
+	if dm.Entries[2].Score != 2 {
+		t.Fatalf("expected score 2, got %f", dm.Entries[2].Score)
+	}
+	if dm.Entries[3].Score != 1 {
+		t.Fatalf("expected score 1, got %f", dm.Entries[3].Score)
+	}
+
+	for i := range dm.Entries {
+		if dm.Entries[i].LastVisit == 0 {
+			t.Fatal("expected non-zero last visit time")
+		}
+	}
 }
 
 func TestSortByDirectory(t *testing.T) {
