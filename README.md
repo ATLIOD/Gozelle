@@ -27,7 +27,7 @@
 - **Compact Storage** — gob-encoded data stored locally  
 - **Shell Integration** — Bash command-line hooks for seamless tracking
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -38,7 +38,7 @@
 - go version 1.24+
 
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -65,7 +65,7 @@ echo 'eval "$(gozelle init bash)"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -89,7 +89,7 @@ gozelle query proj
 gozelle add /some/path/to/add
 ```
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -101,7 +101,7 @@ gozelle add /some/path/to/add
 - Finds all matches for keywords entered i.e. gz keywords
 - Ranks them using a **frecency** score (frequency + recency)
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -115,7 +115,7 @@ This project is a hands-on learning opportunity for:
 - **Command Line Hooks** — shell integration and behavior injection
 - **Gob Encoding** — simple and efficient binary data serialization in Go  
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -128,7 +128,7 @@ This project is a hands-on learning opportunity for:
 - [ ] Man Pages
 - [ ] Completion support
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
 
 ---
 
@@ -136,4 +136,4 @@ This project is a hands-on learning opportunity for:
 
 GPL 3.0
 
-[↑ Back to top](#-gozelle)
+[↑ Back to top](#Gozelle)
