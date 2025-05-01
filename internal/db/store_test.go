@@ -350,6 +350,25 @@ func TestRemove(t *testing.T) {
 }
 
 func TestDetermineFilthy(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dm.dummyData()
+	dm.Entries = append(dm.Entries, &Directory{Path: "/test/path5", Score: 1, LastVisit: 0})
+
+	dm.DetermineFilthy()
+	if !dm.Dirty {
+		t.Fatal("expected dirty flag to be true")
+	}
+
+	dm.Save()
+	dm.DetermineFilthy()
+	if dm.Dirty {
+		t.Fatal("expected dirty flag to be false")
+	}
 }
 
 func TestSwapRemove(t *testing.T) {
