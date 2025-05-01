@@ -210,6 +210,31 @@ func TestAll(t *testing.T) {
 	}
 }
 
+func TestSortByDirectory(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dm.dummyData()
+
+	err = dm.SortByDirectory()
+	if err != nil {
+		t.Fatalf("failed to sort directories: %v", err)
+	}
+
+	if len(dm.Entries) != 4 {
+		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
+	}
+
+	for i := range dm.Entries {
+		if dm.Entries[i].Path > dm.Entries[i+1].Path {
+			t.Fatalf("expected sorted order, got %s > %s", dm.Entries[i].Path, dm.Entries[i+1].Path)
+		}
+	}
+}
+
 func TestDedup(t *testing.T) {
 	dm, err := createTestStore()
 	if err != nil {
@@ -268,9 +293,6 @@ func TestDedup(t *testing.T) {
 			t.Fatal("expected non-zero last visit time")
 		}
 	}
-}
-
-func TestSortByDirectory(t *testing.T) {
 }
 
 func TestAddUpdate(t *testing.T) {
