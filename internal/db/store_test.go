@@ -113,6 +113,41 @@ func TestSave(t *testing.T) {
 }
 
 func TestDecode(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+	dm2, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm2.deleteTestStore()
+
+	dm.dummyData()
+
+	encodedData, err := dm.Encode(dm.Entries)
+	if err != nil {
+		t.Fatalf("failed to encode data: %v", err)
+	}
+
+	err = dm.Decode(&encodedData)
+	if err != nil {
+		t.Fatalf("failed to decode data: %v", err)
+	}
+
+	if len(dm.Entries) != len(dm2.Entries) {
+		t.Fatalf("expected %d entries, got %d", len(dm2.Entries), len(dm.Entries))
+	}
+
+	for i, entry := range dm.Entries {
+		if entry.Path != dm2.Entries[i].Path {
+			t.Fatalf("expected path %s, got %s", dm2.Entries[i].Path, entry.Path)
+		}
+		if entry.Score != dm2.Entries[i].Score {
+			t.Fatalf("expected score %f, got %f", dm2.Entries[i].Score, entry.Score)
+		}
+	}
 }
 
 func TestGet(t *testing.T) {
