@@ -151,6 +151,32 @@ func TestDecode(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dir := "/test/path"
+	err = dm.Add(dir)
+	if err != nil {
+		t.Fatalf("failed to add directory: %v", err)
+	}
+
+	entry, err := dm.Get(dir)
+	if err != nil {
+		t.Fatalf("failed to get directory: %v", err)
+	}
+
+	if entry.Path != dir {
+		t.Fatalf("expected path %s, got %s", dir, entry.Path)
+	}
+	if entry.Score != 1 {
+		t.Fatalf("expected score 1, got %f", entry.Score)
+	}
+	if entry.LastVisit == 0 {
+		t.Fatal("expected non-zero last visit time")
+	}
 }
 
 func TestAll(t *testing.T) {
