@@ -123,7 +123,7 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 
 	if data == nil || len(*data) == 0 {
 		dm.Entries = []*Directory{}
-		log.Println("No data found, initializing empty directory manager.")
+		// log.Println("No data found, initializing empty directory manager.")
 		return nil
 	}
 

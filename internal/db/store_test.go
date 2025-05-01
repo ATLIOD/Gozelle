@@ -15,7 +15,7 @@ func (dm *DirectoryManager) deleteTestStore() error {
 }
 
 func createTestStore() (*DirectoryManager, error) {
-	database, err := NewDirectoryManagerWithPath("./")
+	database, err := NewDirectoryManagerWithPath("./test")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create test store: %w", err)
 	}
@@ -125,6 +125,7 @@ func TestDecode(t *testing.T) {
 	defer dm2.deleteTestStore()
 
 	dm.dummyData()
+	dm2.dummyData()
 
 	encodedData, err := dm.Encode(dm.Entries)
 	if err != nil {
@@ -226,7 +227,7 @@ func TestSortByDirectory(t *testing.T) {
 		t.Fatalf("failed to sort directories: %v", err)
 	}
 
-	if len(dm.Entries) != 4 {
+	if len(dm.Entries) != 5 {
 		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
 	}
 
