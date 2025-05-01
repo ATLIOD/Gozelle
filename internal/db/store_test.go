@@ -321,8 +321,8 @@ func TestAddUpdate(t *testing.T) {
 		t.Fatalf("expected path %s, got %s", dir, entry.Path)
 	}
 
-	if entry.Score != 1.05 {
-		t.Fatalf("expected score 1.05, got %f", entry.Score)
+	if entry.Score != 1 {
+		t.Fatalf("expected score 1, got %f", entry.Score)
 	}
 }
 
