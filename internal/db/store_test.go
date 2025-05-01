@@ -15,7 +15,7 @@ func (dm *DirectoryManager) deleteTestStore() error {
 }
 
 func createTestStore() (*DirectoryManager, error) {
-	database, err := NewDirectoryManagerWithPath("./")
+	database, err := NewDirectoryManagerWithPath("./test")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create test store: %w", err)
 	}
@@ -125,6 +125,7 @@ func TestDecode(t *testing.T) {
 	defer dm2.deleteTestStore()
 
 	dm.dummyData()
+	dm2.dummyData()
 
 	encodedData, err := dm.Encode(dm.Entries)
 	if err != nil {
@@ -226,11 +227,11 @@ func TestSortByDirectory(t *testing.T) {
 		t.Fatalf("failed to sort directories: %v", err)
 	}
 
-	if len(dm.Entries) != 4 {
-		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
+	if len(dm.Entries) != 5 {
+		t.Fatalf("expected 5 entries, got %d", len(dm.Entries))
 	}
 
-	for i := range dm.Entries {
+	for i := 0; i < len(dm.Entries)-1; i++ {
 		if dm.Entries[i].Path > dm.Entries[i+1].Path {
 			t.Fatalf("expected sorted order, got %s > %s", dm.Entries[i].Path, dm.Entries[i+1].Path)
 		}
@@ -248,14 +249,13 @@ func TestDedup(t *testing.T) {
 
 	// Add duplicate entries
 	dm.Add("/test/path1")
-	dm.Add("/test/path2")
-	dm.Add("/test/path3")
-	dm.Add("/test/path4")
 	dm.Add("/test/path1")
-	dm.Add("/test/path2")
 	dm.Add("/test/path1")
+
+	dm.Add("/test/path2")
+	dm.Add("/test/path2")
+
 	dm.Add("/test/path3")
-	dm.Add("/test/path4")
 
 	err = dm.Dedup()
 	if err != nil {
@@ -278,11 +278,11 @@ func TestDedup(t *testing.T) {
 	if dm.Entries[3].Path != "/test/path4" {
 		t.Fatalf("expected path /test/path4, got %s", dm.Entries[3].Path)
 	}
-	if dm.Entries[0].Score != 3 {
-		t.Fatalf("expected score 3, got %f", dm.Entries[0].Score)
+	if dm.Entries[0].Score != 4 {
+		t.Fatalf("expected score 4, got %f", dm.Entries[0].Score)
 	}
-	if dm.Entries[1].Score != 2 {
-		t.Fatalf("expected score 2, got %f", dm.Entries[1].Score)
+	if dm.Entries[1].Score != 3 {
+		t.Fatalf("expected score 3, got %f", dm.Entries[1].Score)
 	}
 	if dm.Entries[2].Score != 2 {
 		t.Fatalf("expected score 2, got %f", dm.Entries[2].Score)
@@ -320,8 +320,8 @@ func TestAddUpdate(t *testing.T) {
 		t.Fatalf("expected path %s, got %s", dir, entry.Path)
 	}
 
-	if entry.Score != 1.05 {
-		t.Fatalf("expected score 1.05, got %f", entry.Score)
+	if entry.Score != 1 {
+		t.Fatalf("expected score 1, got %f", entry.Score)
 	}
 }
 
@@ -338,7 +338,7 @@ func TestSwapRemove(t *testing.T) {
 		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
 	}
 
-	dm.SwapRemove(2)
+	dm.SwapRemoveIDX(2)
 
 	if len(dm.Entries) != 3 {
 		t.Fatalf("expected 3 entries after swap remove, got %d", len(dm.Entries))

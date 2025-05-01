@@ -11,7 +11,7 @@ func Remove(path string) {
 	// find the path in the database
 	for i, dir := range database.Entries {
 		if dir.Path == path {
-			database.SwapRemove(i)
+			database.SwapRemoveIDX(i)
 			break
 		}
 	}
