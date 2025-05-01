@@ -6,14 +6,14 @@
 
 ## Table of Contents
 
-- [Features](#-features)
-- [Requirements](#️-requirements)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [How It Works](#-how-it-works)
-- [Learnings & Concepts](#-learnings--concepts)
-- [Roadmap](#-roadmap)
-- [License](#-license)
+- [Features](#Features)
+- [Requirements](#Requirements)
+- [Installation](#Installation)
+- [Usage](#Usage)
+- [How It Works](#How-it-works)
+- [Learnings & Concepts](#Learnings-&-concepts)
+- [Roadmap](#Roadmap)
+- [License](#License)
 
 ---
 
