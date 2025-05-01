@@ -21,7 +21,7 @@ type DataStore interface {
 	Save() error
 	Dedup() error
 	SortByDirectory() error
-	AddUpdate(dir *Directory) error
+	AddUpdate(dir string) error
 	Remove(dir *Directory) error
 	DetermineFilthy() error
 	SwapRemove(idx int) error
@@ -190,7 +190,7 @@ func (dm *DirectoryManager) All() ([]*Directory, error) {
 		return dm.Entries, nil
 	}
 	// if no entries are found, return an empty slice
-	return nil, fmt.Errorf("no directories found")
+	return []*Directory{}, fmt.Errorf("no directories found")
 }
 
 // saves the directory manager to a file
@@ -246,17 +246,17 @@ func (dm *DirectoryManager) SortByDirectory() error {
 }
 
 // AddUpdate adds a directory to the directory manager and then saves it to file
-func (dm *DirectoryManager) AddUpdate(dir *Directory) error {
-	dm.Add(dir.Path)
+func (dm *DirectoryManager) AddUpdate(dir string) error {
+	dm.Add(dir)
 	dm.Save()
 	return nil
 }
 
 // Remove removes a directory from the directory manager
-func (dm *DirectoryManager) Remove(dir *Directory) error {
+func (dm *DirectoryManager) Remove(dir string) error {
 	dm.SortByDirectory()
 
-	idx := binarySearch(dm.Entries, dir.Path)
+	idx := binarySearch(dm.Entries, dir)
 
 	dm.SwapRemove(idx)
 	return nil
@@ -281,6 +281,9 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 func (dm *DirectoryManager) SwapRemove(idx int) error {
 	if idx < 0 || idx >= len(dm.Entries) {
 		return fmt.Errorf("index out of range: %d", idx)
+	}
+	if idx == -1 {
+		return fmt.Errorf("directory not found")
 	}
 	// Swap the entry with the last entry and then remove the last entry
 	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]

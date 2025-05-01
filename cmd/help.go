@@ -13,7 +13,7 @@ var HelpCmd = &cobra.Command{
 It helps you jump to frequently used directories with just a keyword,
 powered by frecency scoring, fuzzy matching, and shell integration.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(`
+		fmt.Print(`
 Gozelle - Lightning-fast directory jumping tool
 
 USAGE:
