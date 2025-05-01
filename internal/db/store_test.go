@@ -325,6 +325,30 @@ func TestAddUpdate(t *testing.T) {
 	}
 }
 
+func TestSwapRemove(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dm.dummyData()
+
+	if len(dm.Entries) != 4 {
+		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
+	}
+
+	dm.SwapRemove(2)
+
+	if len(dm.Entries) != 3 {
+		t.Fatalf("expected 3 entries after swap remove, got %d", len(dm.Entries))
+	}
+
+	if dm.Entries[2].Path == "/test/path3" {
+		t.Fatal("expected path /test/path3 to be removed")
+	}
+}
+
 func TestRemove(t *testing.T) {
 	dm, err := createTestStore()
 	if err != nil {
@@ -369,7 +393,4 @@ func TestDetermineFilthy(t *testing.T) {
 	if dm.Dirty {
 		t.Fatal("expected dirty flag to be false")
 	}
-}
-
-func TestSwapRemove(t *testing.T) {
 }
