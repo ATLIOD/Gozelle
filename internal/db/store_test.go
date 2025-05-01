@@ -228,10 +228,10 @@ func TestSortByDirectory(t *testing.T) {
 	}
 
 	if len(dm.Entries) != 5 {
-		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
+		t.Fatalf("expected 5 entries, got %d", len(dm.Entries))
 	}
 
-	for i := range dm.Entries {
+	for i := 0; i < len(dm.Entries)-1; i++ {
 		if dm.Entries[i].Path > dm.Entries[i+1].Path {
 			t.Fatalf("expected sorted order, got %s > %s", dm.Entries[i].Path, dm.Entries[i+1].Path)
 		}
