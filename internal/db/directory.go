@@ -33,3 +33,5 @@ func (d *Directory) UpdateLastVisit() {
 func (d *Directory) UpdateScore() {
 	d.Score *= 1.05
 }
+
+// TODO: add a separate method to update on a gozelle visit, I want the gozelle visit to be weigthed differently than a cd visit
