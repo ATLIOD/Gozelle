@@ -11,7 +11,7 @@
 - [Installation](#Installation)
 - [Usage](#Usage)
 - [How It Works](#How-it-works)
-- [Learnings & Concepts](#Learnings-&-concepts)
+- [Learnings & Concepts](#Learnings-\&-concepts)
 - [Roadmap](#Roadmap)
 - [License](#License)
 
