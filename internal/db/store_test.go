@@ -219,6 +219,8 @@ func TestSortByDirectory(t *testing.T) {
 
 	dm.dummyData()
 
+	dm.Add("/stest/path")
+
 	err = dm.SortByDirectory()
 	if err != nil {
 		t.Fatalf("failed to sort directories: %v", err)
@@ -253,6 +255,7 @@ func TestDedup(t *testing.T) {
 	dm.Add("/test/path2")
 	dm.Add("/test/path1")
 	dm.Add("/test/path3")
+	dm.Add("/test/path4")
 
 	err = dm.Dedup()
 	if err != nil {
@@ -296,9 +299,54 @@ func TestDedup(t *testing.T) {
 }
 
 func TestAddUpdate(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dir := "/test/path5"
+	err = dm.AddUpdate(dir)
+	if err != nil {
+		t.Fatalf("failed to update directory: %v", err)
+	}
+
+	entry, err := dm.Get(dir)
+	if err != nil {
+		t.Fatalf("failed to get directory: %v", err)
+	}
+
+	if entry.Path != dir {
+		t.Fatalf("expected path %s, got %s", dir, entry.Path)
+	}
+
+	if entry.Score != 1.05 {
+		t.Fatalf("expected score 1.05, got %f", entry.Score)
+	}
 }
 
 func TestRemove(t *testing.T) {
+	dm, err := createTestStore()
+	if err != nil {
+		t.Fatalf("failed to create test store: %v", err)
+	}
+	defer dm.deleteTestStore()
+
+	dir := "/test/path"
+	err = dm.Add(dir)
+	if err != nil {
+		t.Fatalf("failed to add directory: %v", err)
+	}
+
+	err = dm.Remove(dir)
+	if err != nil {
+		t.Fatalf("failed to remove directory: %v", err)
+	}
+
+	_, err = dm.Get(dir)
+	if err == nil {
+		t.Fatalf("expected error getting removed directory, got nil")
+	}
 }
 
 func TestDetermineFilthy(t *testing.T) {
