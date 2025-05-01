@@ -249,14 +249,13 @@ func TestDedup(t *testing.T) {
 
 	// Add duplicate entries
 	dm.Add("/test/path1")
-	dm.Add("/test/path2")
-	dm.Add("/test/path3")
-	dm.Add("/test/path4")
 	dm.Add("/test/path1")
-	dm.Add("/test/path2")
 	dm.Add("/test/path1")
+
+	dm.Add("/test/path2")
+	dm.Add("/test/path2")
+
 	dm.Add("/test/path3")
-	dm.Add("/test/path4")
 
 	err = dm.Dedup()
 	if err != nil {
@@ -279,11 +278,11 @@ func TestDedup(t *testing.T) {
 	if dm.Entries[3].Path != "/test/path4" {
 		t.Fatalf("expected path /test/path4, got %s", dm.Entries[3].Path)
 	}
-	if dm.Entries[0].Score != 3 {
-		t.Fatalf("expected score 3, got %f", dm.Entries[0].Score)
+	if dm.Entries[0].Score != 4 {
+		t.Fatalf("expected score 4, got %f", dm.Entries[0].Score)
 	}
-	if dm.Entries[1].Score != 2 {
-		t.Fatalf("expected score 2, got %f", dm.Entries[1].Score)
+	if dm.Entries[1].Score != 3 {
+		t.Fatalf("expected score 3, got %f", dm.Entries[1].Score)
 	}
 	if dm.Entries[2].Score != 2 {
 		t.Fatalf("expected score 2, got %f", dm.Entries[2].Score)
@@ -339,7 +338,7 @@ func TestSwapRemove(t *testing.T) {
 		t.Fatalf("expected 4 entries, got %d", len(dm.Entries))
 	}
 
-	dm.SwapRemove(2)
+	dm.SwapRemoveIDX(2)
 
 	if len(dm.Entries) != 3 {
 		t.Fatalf("expected 3 entries after swap remove, got %d", len(dm.Entries))

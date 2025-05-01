@@ -227,7 +227,7 @@ func (dm *DirectoryManager) Dedup() error {
 				dm.Entries[i].LastVisit = dm.Entries[i+1].LastVisit
 			}
 			// remove duplicate entry
-			dm.SwapRemove(i + 1)
+			dm.RemoveIDX(i + 1)
 			// don't increment i, check the new i+1 again
 		} else {
 			i++
@@ -252,13 +252,26 @@ func (dm *DirectoryManager) AddUpdate(dir string) error {
 	return nil
 }
 
+func (dm *DirectoryManager) RemoveIDX(idx int) error {
+	if idx < 0 || idx >= len(dm.Entries) {
+		return fmt.Errorf("index out of range: %d", idx)
+	}
+
+	dm.Entries = append(dm.Entries[:idx], dm.Entries[idx+1:]...)
+	return nil
+}
+
 // Remove removes a directory from the directory manager
 func (dm *DirectoryManager) Remove(dir string) error {
 	dm.SortByDirectory()
 
 	idx := binarySearch(dm.Entries, dir)
 
-	dm.SwapRemove(idx)
+	if idx == -1 {
+		return fmt.Errorf("directory not found: %s", dir)
+	}
+
+	dm.Entries = append(dm.Entries[:idx], dm.Entries[idx+1:]...)
 	return nil
 }
 
@@ -278,13 +291,29 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 
 // SwapRemove removes a directory from the directory manager and updates the file
 // useful because it makes removal 0(1) instead of O(n)
-func (dm *DirectoryManager) SwapRemove(idx int) error {
+func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
 	if idx < 0 || idx >= len(dm.Entries) {
 		return fmt.Errorf("index out of range: %d", idx)
 	}
 	if idx == -1 {
 		return fmt.Errorf("directory not found")
 	}
+	// Swap the entry with the last entry and then remove the last entry
+	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
+	dm.Entries = dm.Entries[:len(dm.Entries)-1]
+	dm.Dirty = true
+	return nil
+}
+
+func (dm *DirectoryManager) SwapRemove(dir string) error {
+	dm.SortByDirectory()
+
+	idx := binarySearch(dm.Entries, dir)
+
+	if idx == -1 {
+		return fmt.Errorf("directory not found: %s", dir)
+	}
+
 	// Swap the entry with the last entry and then remove the last entry
 	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
 	dm.Entries = dm.Entries[:len(dm.Entries)-1]
