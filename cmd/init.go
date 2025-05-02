@@ -49,7 +49,17 @@ if [[ "$PROMPT_COMMAND" != *"__gozelle_hook"* ]]; then
 fi
 
 gz() {
+    if [ $# -eq 0 ]; then
+        cd ~
+    elif [ $# -eq 1 ] && [ "$1" = "-" ]; then
+        cd "${OLDPWD}"
+    elif [ $# -eq 1 ] && [ -d "$1" ]; then
+        cd "$1"
+    elif [ $# -eq 2 ] && [ "$1" = "--" ]; then
+        cd "$2"
+    else
         target="$(command gozelle query "$@")" && cd "$target"
+    fi
 }
 `)
 }
