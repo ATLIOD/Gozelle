@@ -20,7 +20,11 @@ func main() {
 		cmd.InitCmd.Run(cmd.InitCmd, keywords)
 	case "query":
 		// Call the query function
-		result := cmd.QueryTop(keywords)
+		result := cmd.QueryTop(keywords, "")
+		if result.Path == nil {
+			log.Println("No match found")
+			return
+		}
 		log.Println("jumped to:", result.Path.Path)
 		// log.Println("Frecency:", result.Frecency)
 		// log.Println("Last visit:", result.Path.LastVisit)

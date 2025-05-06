@@ -6,22 +6,6 @@ import (
 	"testing"
 )
 
-func (dm *DirectoryManager) deleteTestStore() error {
-	err := os.Remove(dm.FilePath)
-	if err != nil {
-		return fmt.Errorf("failed to delete test store: %w", err)
-	}
-	return nil
-}
-
-func createTestStore() (*DirectoryManager, error) {
-	database, err := NewDirectoryManagerWithPath("./test")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create test store: %w", err)
-	}
-	return database, nil
-}
-
 // add dummy data to the store
 func (dm *DirectoryManager) dummyData() {
 	dm.Add("/test/path1")
@@ -29,15 +13,17 @@ func (dm *DirectoryManager) dummyData() {
 	dm.Add("/test/path3")
 	dm.Add("/test/path4")
 
+	dm.Dirty = true
+
 	dm.Save()
 }
 
 func TestOpen(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	_, err = dm.Open(dm.FilePath)
 	if err != nil {
@@ -46,11 +32,11 @@ func TestOpen(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dir := "/test/path"
 	err = dm.Add(dir)
@@ -70,11 +56,11 @@ func TestAdd(t *testing.T) {
 }
 
 func TestEncode(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -89,11 +75,11 @@ func TestEncode(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -113,16 +99,16 @@ func TestSave(t *testing.T) {
 }
 
 func TestDecode(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
-	dm2, err := createTestStore()
+	defer dm.DeleteTestStore()
+	dm2, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm2.deleteTestStore()
+	defer dm2.DeleteTestStore()
 
 	dm.dummyData()
 	dm2.dummyData()
@@ -152,11 +138,11 @@ func TestDecode(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dir := "/test/path"
 	err = dm.Add(dir)
@@ -181,11 +167,11 @@ func TestGet(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -212,11 +198,11 @@ func TestAll(t *testing.T) {
 }
 
 func TestSortByDirectory(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -239,11 +225,11 @@ func TestSortByDirectory(t *testing.T) {
 }
 
 func TestDedup(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -299,11 +285,11 @@ func TestDedup(t *testing.T) {
 }
 
 func TestAddUpdate(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dir := "/test/path5"
 	err = dm.AddUpdate(dir)
@@ -326,11 +312,11 @@ func TestAddUpdate(t *testing.T) {
 }
 
 func TestSwapRemove(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 
@@ -350,11 +336,11 @@ func TestSwapRemove(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dir := "/test/path"
 	err = dm.Add(dir)
@@ -374,11 +360,11 @@ func TestRemove(t *testing.T) {
 }
 
 func TestDetermineFilthy(t *testing.T) {
-	dm, err := createTestStore()
+	dm, err := CreateTestStore()
 	if err != nil {
 		t.Fatalf("failed to create test store: %v", err)
 	}
-	defer dm.deleteTestStore()
+	defer dm.DeleteTestStore()
 
 	dm.dummyData()
 	dm.Entries = append(dm.Entries, &Directory{Path: "/test/path5", Score: 1, LastVisit: 0})
