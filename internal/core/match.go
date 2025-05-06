@@ -4,6 +4,9 @@ import "strings"
 
 // MatchByKeywords checks if the path contains all the keywords in order.
 func MatchByKeywords(path string, keywords []string) bool {
+	if path == "" || len(keywords) == 0 {
+		return false
+	}
 	path = strings.ToLower(path)
 	lastIdx := -1
 	for _, keyword := range keywords {
