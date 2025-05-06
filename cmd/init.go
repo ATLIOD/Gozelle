@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"gozelle/internal/core"
 	"os"
 	"strings"
 
@@ -20,6 +21,7 @@ var InitCmd = &cobra.Command{
 
 		switch shell {
 		case "bash":
+			go core.CleanStore()
 			fmt.Println(bashInitScript())
 		default:
 			fmt.Fprintf(os.Stderr, "unsupported shell: %s\n", shell)

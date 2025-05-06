@@ -228,14 +228,14 @@ func (dm *DirectoryManager) Dedup() error {
 			}
 			// remove duplicate entry
 			dm.RemoveIDX(i + 1)
+			if !dm.Dirty {
+				dm.Dirty = true
+			}
 			// don't increment i, check the new i+1 again
 		} else {
 			i++
 		}
 	}
-	// set dirty flag to true
-	dm.Dirty = true
-
 	return nil
 }
 
