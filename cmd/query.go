@@ -15,11 +15,26 @@ type ScoredMatch struct {
 }
 
 // QueryTop searches for the best match in the directories based on keywords.
-func QueryTop(keywords []string) ScoredMatch {
-	database, err := db.NewDirectoryManager()
-	if err != nil {
-		panic(err)
+func QueryTop(keywords []string, path string) ScoredMatch {
+	if len(keywords) == 0 {
+		fmt.Print("./")
+		return ScoredMatch{}
 	}
+
+	var database *db.DirectoryManager
+	var err error
+	if path == "" {
+		database, err = db.NewDirectoryManager()
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		database, err = db.NewDirectoryManagerWithPath(path)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	jobs := make(chan *db.Directory)
 	results := make(chan ScoredMatch)
 	var wg sync.WaitGroup
@@ -53,7 +68,7 @@ func QueryTop(keywords []string) ScoredMatch {
 		}
 	}
 	if bestMatch.Path == nil {
-		fmt.Println("No match found")
+		fmt.Print("./")
 		return bestMatch
 	}
 	bestMatch.Path.UpdateLastVisit()
