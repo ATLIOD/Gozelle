@@ -28,7 +28,9 @@ func main() {
 			log.Println("No match found")
 			return
 		}
-		log.Println("jumped to:", result.Path.Path)
+		if os.Getenv("GOZELLE_ECHO") == "true" {
+			log.Println("jumped to:", result.Path.Path)
+		}
 		// log.Println("Frecency:", result.Frecency)
 		// log.Println("Last visit:", result.Path.LastVisit)
 		// log.Println("Score:", result.Path.Score)
