@@ -59,17 +59,8 @@ func NewDirectoryManagerWithPath(filePath string) (*DirectoryManager, error) {
 }
 
 func NewDirectoryManager() (*DirectoryManager, error) {
-	dataDir := os.Getenv("XDG_DATA_HOME")
-	if dataDir == "" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("could not get user home directory: %w", err)
-		}
-		dataDir = filepath.Join(homeDir, ".local", "share")
-	}
+	filePath := os.Getenv("GOZELLE_DATA_DIR")
 
-	filePath := filepath.Join(dataDir, "Gozelle", "db.gob")
-	// log.Println("Using file path:", filePath)
 	dm := &DirectoryManager{
 		FilePath: filePath,
 		Entries:  []*Directory{},

@@ -3,11 +3,14 @@ package main
 import (
 	"fmt"
 	"gozelle/cmd"
+	"gozelle/internal/core"
 	"log"
 	"os"
 )
 
 func main() {
+	core.SetConfig()
+
 	if len(os.Args) < 2 {
 		cmd.HelpCmd.Run(cmd.HelpCmd, []string{})
 		os.Exit(1)
