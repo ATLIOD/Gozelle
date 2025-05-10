@@ -140,9 +140,9 @@ This project is a hands-on learning opportunity for:
 - [x] Zsh support  
 - [ ] Fish shell support  
 - [ ] Interactive `fzf`-style selector  
-- [ ] Configurable data file location  
+- [X] Configurable data file location  
 - [ ] Directory expiration / pruning logic  
-- [ ] Man Pages  
+- [X] Man Page  
 - [ ] Completion support
 
 [↑ Back to top](#Gozelle)
