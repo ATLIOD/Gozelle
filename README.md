@@ -25,7 +25,7 @@
 - **Manual Add** — add directories to the index yourself  
 - **Query Mode** — list matching directories without jumping  
 - **Compact Storage** — gob-encoded data stored locally  
-- **Shell Integration** — Bash command-line hooks for seamless tracking
+- **Shell Integration** — Bash and Zsh command-line hooks for seamless tracking
 
 [↑ Back to top](#Gozelle)
 
@@ -33,10 +33,9 @@
 
 ## Requirements
 
-- [Bash](https://www.gnu.org/software/bash/) shell  
-- Gozelle binary in your `$PATH`
+- [Bash](https://www.gnu.org/software/bash/) or [Zsh](https://www.zsh.org/) shell  
+- Gozelle binary in your `$PATH`  
 - go version 1.24+
-
 
 [↑ Back to top](#Gozelle)
 
@@ -44,25 +43,42 @@
 
 ## Installation
 
-### 1. Build from Source
+### Option 1: Build from Source
 
 ```bash
 git clone https://github.com/yourusername/gozelle
 cd gozelle
 go build -o gozelle .
-```
-
-### 2. Move Binary to PATH
-
-```bash
 sudo mv gozelle /usr/local/bin/
 ```
+`/usr/local/bin` can be replace by any direcotry in your `$PATH`
 
-### 3. Add to Bash Startup File
+### Option 2: Use `go install`
+
+```bash
+go install github.com/ATLIOD/Gozelle@latest
+```
+
+Make sure your `$GOPATH/bin` is in your `$PATH` (commonly `~/go/bin`):
+
+```bash
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+### Add to Shell Startup File
+
+For **Bash**:
 
 ```bash
 echo 'eval "$(gozelle init bash)"' >> ~/.bashrc
 source ~/.bashrc
+```
+
+For **Zsh**:
+
+```bash
+echo 'eval "$(gozelle init zsh)"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 [↑ Back to top](#Gozelle)
@@ -95,10 +111,10 @@ gozelle add /some/path/to/add
 
 ## How It Works
 
-- Enables shell hooks for automatic logging via `init bash`
-- Tracks every visited directory using the shell hook
-- Stores them in a gob-encoded file under your user data directory (Default is ~.local/share/Gozelle for Linux users)
-- Finds all matches for keywords entered i.e. gz keywords
+- Enables shell hooks for automatic logging via `init bash` or `init zsh`  
+- Tracks every visited directory using the shell hook  
+- Stores them in a gob-encoded file under your user data directory (default is `~/.local/share/Gozelle` for Linux users)  
+- Finds all matches for keywords entered, e.g., `gz keywords`  
 - Ranks them using a **frecency** score (frequency + recency)
 
 [↑ Back to top](#Gozelle)
@@ -112,7 +128,7 @@ This project is a hands-on learning opportunity for:
 - **Concurrency** — handling simultaneous updates and queries efficiently  
 - **Worker Pools** — to process background updates to scoring  
 - **Mutexes** — for safe access to shared resources (like the gob database)  
-- **Command Line Hooks** — shell integration and behavior injection
+- **Command Line Hooks** — shell integration and behavior injection  
 - **Gob Encoding** — simple and efficient binary data serialization in Go  
 
 [↑ Back to top](#Gozelle)
@@ -121,11 +137,12 @@ This project is a hands-on learning opportunity for:
 
 ## Roadmap
 
-- [ ] Zsh / Fish support  
+- [x] Zsh support  
+- [ ] Fish shell support  
 - [ ] Interactive `fzf`-style selector  
 - [ ] Configurable data file location  
-- [ ] Directory expiration / pruning logic
-- [ ] Man Pages
+- [ ] Directory expiration / pruning logic  
+- [ ] Man Pages  
 - [ ] Completion support
 
 [↑ Back to top](#Gozelle)
@@ -134,6 +151,8 @@ This project is a hands-on learning opportunity for:
 
 ## 📄 License
 
-GPL 3.0
+
+GNU General Public License 3.0 — see [LICENSE](LICENSE) for details.
+
 
 [↑ Back to top](#Gozelle)
