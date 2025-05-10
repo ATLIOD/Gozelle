@@ -149,7 +149,7 @@ This project is a hands-on learning opportunity for:
 
 ---
 
-## 📄 License
+## License
 
 
 GNU General Public License 3.0 — see [LICENSE](LICENSE) for details.
