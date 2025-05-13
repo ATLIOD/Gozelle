@@ -23,7 +23,7 @@ func main() {
 		cmd.InitCmd.Run(cmd.InitCmd, keywords)
 	case "query":
 		// Call the query function
-		result := cmd.QueryTop(keywords, "")
+		result := cmd.QueryTop(keywords, os.Getenv("GOZELLE_DATA_DIR"))
 		if result.Path == nil {
 			log.Println("No match found")
 			return
