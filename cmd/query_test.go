@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"gozelle/internal/db"
+	"os"
 	"testing"
 )
 
@@ -12,6 +13,8 @@ func TestQueryTop(t *testing.T) {
 		t.Fatalf("failed to create test store: %v", err)
 	}
 	defer dm.DeleteTestStore()
+
+	os.Setenv("GOZELLE_DATA_DIR", dm.FilePath)
 
 	dm.QueryDummyData()
 

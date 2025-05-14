@@ -25,16 +25,9 @@ func QueryTop(keywords []string, path string) ScoredMatch {
 	var err error
 
 	// TODO: changes tests to use env variable so this comparison is not neeeded
-	if path == "" {
-		database, err = db.NewDirectoryManager()
-		if err != nil {
-			panic(err)
-		}
-	} else {
-		database, err = db.NewDirectoryManagerWithPath(path)
-		if err != nil {
-			panic(err)
-		}
+	database, err = db.NewDirectoryManagerWithPath(path)
+	if err != nil {
+		panic(err)
 	}
 
 	jobs := make(chan *db.Directory)
