@@ -21,11 +21,7 @@ func QueryTop(keywords []string, path string) ScoredMatch {
 		return ScoredMatch{}
 	}
 
-	var database *db.DirectoryManager
-	var err error
-
-	// TODO: changes tests to use env variable so this comparison is not neeeded
-	database, err = db.NewDirectoryManagerWithPath(path)
+	database, err := db.NewDirectoryManagerWithPath(path)
 	if err != nil {
 		panic(err)
 	}

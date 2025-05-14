@@ -37,9 +37,12 @@ func main() {
 	case "add":
 		// Call the add function
 		cmd.Add(os.Args[2])
+		go core.Prune()
+
 	case "remove":
 		// Call the remove function
 		cmd.Remove(os.Args[2])
+		go core.Prune()
 	case "list":
 		// Call the list function
 		cmd.List()
