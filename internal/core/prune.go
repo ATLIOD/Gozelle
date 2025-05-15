@@ -11,6 +11,5 @@ func Prune() {
 		panic(err)
 	}
 	database.Dedup()
-	database.DetermineFilthy()
 	database.Save()
 }

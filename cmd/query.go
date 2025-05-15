@@ -85,14 +85,14 @@ func worker(jobs <-chan *db.Directory, results chan<- ScoredMatch, keywords []st
 	}
 }
 
-func QueryInteractive(path string, multi bool) error {
+func QueryInteractive(path string, multi bool) (string, error) {
 	dm, err := db.NewDirectoryManagerWithPath(path)
 	if err != nil {
-		return fmt.Errorf("failed to load directory manager: %w", err)
+		return "", fmt.Errorf("failed to load directory manager: %w", err)
 	}
 
 	if len(dm.Entries) == 0 {
-		return fmt.Errorf("no directories found in datastore")
+		return "", fmt.Errorf("no directories found in datastore")
 	}
 
 	lines := make([]string, len(dm.Entries))
@@ -108,7 +108,7 @@ func QueryInteractive(path string, multi bool) error {
 	cmd := exec.Command("fzf", args...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return fmt.Errorf("failed to get stdin pipe: %w", err)
+		return "", fmt.Errorf("failed to get stdin pipe: %w", err)
 	}
 
 	go func() {
@@ -120,15 +120,16 @@ func QueryInteractive(path string, multi bool) error {
 
 	output, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("fzf exited with error or no selection: %w", err)
+		return "", fmt.Errorf("fzf exited with error or no selection: %w", err)
 	}
 
 	selectedLines := strings.Split(strings.TrimSpace(string(output)), "\n")
 
+	var sel string
 	// Print selected directories to stdout
-	for _, sel := range selectedLines {
+	for _, sel = range selectedLines {
 		fmt.Print(sel, "\n")
 	}
 
-	return nil
+	return sel, nil
 }
