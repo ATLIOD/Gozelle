@@ -66,6 +66,9 @@ gz() {
         target="$(command gozelle query "$@")" && cd "$target"
     fi
 }
+gi() {
+	target="$(command gozelle interactive "$@")" && cd "$target"
+}
 `)
 }
 
@@ -93,6 +96,9 @@ gz() {
     else
         target="$(command gozelle query "$@")" && cd "$target"
     fi
+}
+gi() {
+	target="$(command gozelle interactive "$@")" && cd "$target"
 }
 `)
 }
