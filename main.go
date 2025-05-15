@@ -49,15 +49,11 @@ func main() {
 	case "help":
 		// Call the help function
 		cmd.HelpCmd.Run(cmd.HelpCmd, keywords)
-	case "-i":
-		ensureFzfInstalled()
-		result := cmd.QueryInteractive(keywords, os.Getenv("GOZELLE_DATA_DIR"))
-		if result.Path == nil {
-			log.Println("No match selected")
-			return
-		}
-		if os.Getenv("GOZELLE_ECHO") == "true" {
-			log.Println("jumped to:", result.Path.Path)
+	case "interactive":
+		core.CheckFzfInstalled()
+		err := cmd.QueryInteractive(os.Getenv("GOZELLE_DATA_DIR"), false)
+		if err != nil {
+			fmt.Println("Error:", err)
 		}
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])

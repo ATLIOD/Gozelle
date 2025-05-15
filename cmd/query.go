@@ -5,7 +5,9 @@ import (
 	"gozelle/internal/core"
 	"gozelle/internal/db"
 	"log"
+	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 )
 
@@ -81,4 +83,52 @@ func worker(jobs <-chan *db.Directory, results chan<- ScoredMatch, keywords []st
 			results <- ScoredMatch{Path: dir, Frecency: score}
 		}
 	}
+}
+
+func QueryInteractive(path string, multi bool) error {
+	dm, err := db.NewDirectoryManagerWithPath(path)
+	if err != nil {
+		return fmt.Errorf("failed to load directory manager: %w", err)
+	}
+
+	if len(dm.Entries) == 0 {
+		return fmt.Errorf("no directories found in datastore")
+	}
+
+	lines := make([]string, len(dm.Entries))
+	for i, dir := range dm.Entries {
+		lines[i] = dir.Path
+	}
+
+	args := []string{"--ansi"}
+	if multi {
+		args = append(args, "--multi")
+	}
+
+	cmd := exec.Command("fzf", args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return fmt.Errorf("failed to get stdin pipe: %w", err)
+	}
+
+	go func() {
+		defer stdin.Close()
+		for _, line := range lines {
+			fmt.Fprintln(stdin, line)
+		}
+	}()
+
+	output, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("fzf exited with error or no selection: %w", err)
+	}
+
+	selectedLines := strings.Split(strings.TrimSpace(string(output)), "\n")
+
+	// Print selected directories to stdout
+	for _, sel := range selectedLines {
+		fmt.Print(sel, "\n")
+	}
+
+	return nil
 }
