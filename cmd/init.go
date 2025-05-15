@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"gozelle/internal/core"
 	"os"
 	"strings"
+
+	"github.com/atliod/gozelle/internal/core"
 
 	"github.com/spf13/cobra"
 )

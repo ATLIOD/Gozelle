@@ -1,6 +1,6 @@
 package cmd
 
-import "gozelle/internal/db"
+import "github.com/atliod/gozelle/internal/db"
 
 func Remove(path string) {
 	database, err := db.NewDirectoryManager()

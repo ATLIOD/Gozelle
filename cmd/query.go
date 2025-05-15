@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"gozelle/internal/core"
-	"gozelle/internal/db"
 	"log"
 	"os/exec"
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/atliod/gozelle/internal/core"
+	"github.com/atliod/gozelle/internal/db"
 )
 
 type ScoredMatch struct {

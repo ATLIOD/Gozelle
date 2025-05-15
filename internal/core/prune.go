@@ -1,8 +1,9 @@
 package core
 
 import (
-	"gozelle/internal/db"
 	"os"
+
+	"github.com/atliod/gozelle/internal/db"
 )
 
 func Prune() {

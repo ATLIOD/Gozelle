@@ -1,7 +1,7 @@
 package core
 
 import (
-	"gozelle/internal/db"
+	"github.com/atliod/gozelle/internal/db"
 )
 
 // cleanstore loads in a datastore and calls the deduplicate function
