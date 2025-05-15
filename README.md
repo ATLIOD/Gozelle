@@ -10,6 +10,7 @@
 - [Requirements](#Requirements)
 - [Installation](#Installation)
 - [Usage](#Usage)
+- [Environment Variables](#Environment-Variables)
 - [How It Works](#How-it-works)
 - [Learnings & Concepts](#Learnings--concepts)
 - [Roadmap](#Roadmap)
@@ -36,6 +37,11 @@
 - [Bash](https://www.gnu.org/software/bash/) or [Zsh](https://www.zsh.org/) shell  
 - Gozelle binary in your `$PATH`  
 - go version 1.24+
+- [`fzf`](https://github.com/junegunn/fzf) installed for interactive mode
+
+**Platform Support Notice:**  
+> Gozelle has currently only been tested and verified on Linux systems. While it may work on other Unix-like OSes or Windows, no official support or testing has been done outside of Linux.
+
 
 [↑ Back to top](#Gozelle)
 
@@ -104,8 +110,33 @@ gozelle query proj
 ```bash
 gozelle add /some/path/to/add
 ```
+### Interactive Mode
+```bash
+gzi
+```
 
 [↑ Back to top](#Gozelle)
+
+---
+## Environment Variables
+
+| Variable          | Description                                                                                 | Default                                                                                           |
+|-------------------|---------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `GOZELLE_ECHO`    | Whether to print the target directory path to stdout after jumping. Must be `"true"` or `"false"`. | `"false"` (default)                                                                             |
+| `GOZELLE_DATA_DIR`| Path to the directory where Gozelle stores its data file (`db.gob`). If not set, defaults to: <br> `$XDG_DATA_HOME/gozelle/db.gob` <br> or `<home>/.local/share/gozelle/db.gob` if `$XDG_DATA_HOME` is unset. | `~/.local/share/gozelle/db.gob` (default)                                                       |
+
+### Notes
+
+- `GOZELLE_ECHO` must be set to exactly `"true"` or `"false"`. Any other value will reset it to `"false"` and print a warning.
+- When `GOZELLE_DATA_DIR` is set to a non-existent directory, Gozelle will attempt to create the directory automatically in the uses default data directory. ~/.local/share in linux)
+- The environment variable `GOZELLE_DATA_DIR` refers to a directory; the actual data file is stored inside it as `db.gob`.
+
+### Example usage
+
+```bash
+export GOZELLE_ECHO=true
+export GOZELLE_DATA_DIR="$HOME/.config/gozelle"
+```
 
 ---
 
@@ -116,6 +147,7 @@ gozelle add /some/path/to/add
 - Stores them in a gob-encoded file under your user data directory (default is `~/.local/share/Gozelle` for Linux users)  
 - Finds all matches for keywords entered, e.g., `gz keywords`  
 - Ranks them using a **frecency** score (frequency + recency)
+- Uses fzf to provide an interactive selection UI when requested
 
 [↑ Back to top](#Gozelle)
 
@@ -129,7 +161,8 @@ This project is a hands-on learning opportunity for:
 - **Worker Pools** — to process background updates to scoring  
 - **Mutexes** — for safe access to shared resources (like the gob database)  
 - **Command Line Hooks** — shell integration and behavior injection  
-- **Gob Encoding** — simple and efficient binary data serialization in Go  
+- **Gob Encoding** — simple and efficient binary data serialization in Go
+- **Integration with External Tools** — incorporating fzf for interactive mode
 
 [↑ Back to top](#Gozelle)
 
@@ -139,9 +172,9 @@ This project is a hands-on learning opportunity for:
 
 - [x] Zsh support  
 - [ ] Fish shell support  
-- [ ] Interactive `fzf`-style selector  
+- [x] Interactive `fzf`-style selector  
 - [X] Configurable data file location  
-- [ ] Directory expiration / pruning logic  
+- [x] Directory expiration / pruning logic  
 - [X] Man Page  
 - [ ] Completion support
 
