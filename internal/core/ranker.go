@@ -1,9 +1,10 @@
 package core
 
 import (
-	"gozelle/internal/db"
 	"math"
 	"time"
+
+	"github.com/atliod/gozelle/internal/db"
 )
 
 // WeighFrecency calculates the frecency score of a Directory instance based on its LastVisit time and Score.

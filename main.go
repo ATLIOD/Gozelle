@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"gozelle/cmd"
-	"gozelle/internal/core"
 	"log"
 	"os"
+
+	"github.com/atliod/gozelle/cmd"
+	"github.com/atliod/gozelle/internal/core"
 )
 
 func main() {

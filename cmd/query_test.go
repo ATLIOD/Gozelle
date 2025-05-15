@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"gozelle/internal/db"
 	"os"
 	"testing"
+
+	"github.com/atliod/gozelle/internal/db"
 )
 
 // Test for queryTop

@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"gozelle/internal/db"
+
+	"github.com/atliod/gozelle/internal/db"
 )
 
 func List() {
