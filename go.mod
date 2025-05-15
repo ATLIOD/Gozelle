@@ -1,4 +1,4 @@
-module gozelle
+module github.com/atliod/gozelle
 
 go 1.24
 
