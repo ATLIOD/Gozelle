@@ -12,7 +12,7 @@ import (
 
 var InitCmd = &cobra.Command{
 	Use:   "init [shell]",
-	Short: "Generate shell integration (bash only for now)",
+	Short: "Generate shell integration",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		shell := "bash"
@@ -26,6 +26,8 @@ var InitCmd = &cobra.Command{
 			fmt.Println(bashInitScript())
 		case "zsh":
 			fmt.Println(zshInitScript())
+		case "fish":
+			fmt.Println(fishInitScript())
 		default:
 			fmt.Fprintf(os.Stderr, "unsupported shell: %s\n", shell)
 			os.Exit(1)
@@ -101,5 +103,47 @@ gz() {
 gi() {
 	target="$(command gozelle interactive "$@")" && cd "$target"
 }
+`)
+}
+
+// eval (gozelle init fish)
+func fishInitScript() string {
+	return strings.TrimSpace(`
+# Gozelle Fish init script
+
+function __gozelle_prompt_hook --on-event fish_prompt
+    if not set -q __gozelle_oldpwd
+        set -g __gozelle_oldpwd $PWD
+    end
+
+    if test "$__gozelle_oldpwd" != "$PWD"
+        set -g __gozelle_oldpwd $PWD
+        gozelle add "$PWD" > /dev/null 2>&1
+    end
+end
+
+function gz
+    if test (count $argv) -eq 0
+        cd ~
+    else if test (count $argv) -eq 1 -a "$argv[1]" = "-"
+        cd "$OLDPWD"
+    else if test (count $argv) -eq 1 -a -d "$argv[1]"
+        cd "$argv[1]"
+    else if test (count $argv) -eq 2 -a "$argv[1]" = "--"
+        cd "$argv[2]"
+    else
+        set target (gozelle query $argv)
+        if test -n "$target"
+            cd "$target"
+        end
+    end
+end
+
+function gi
+    set target (gozelle interactive $argv)
+    if test -n "$target"
+        cd "$target"
+    end
+end
 `)
 }
