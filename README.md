@@ -87,6 +87,13 @@ echo 'eval "$(gozelle init zsh)"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
+For **Fish**:
+
+```bash
+echo 'eval (gozelle init fish)' >> ~/.config/fish/config.fish
+source ~/.config/fish/config.fish
+```
+
 [↑ Back to top](#Gozelle)
 
 ---
@@ -171,7 +178,7 @@ This project is a hands-on learning opportunity for:
 ## Roadmap
 
 - [x] Zsh support  
-- [ ] Fish shell support  
+- [x] Fish shell support  
 - [x] Interactive `fzf`-style selector  
 - [X] Configurable data file location  
 - [x] Directory expiration / pruning logic  
