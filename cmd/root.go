@@ -17,5 +17,9 @@ func init() {
 	RootCmd.AddCommand(ListCmd)
 	RootCmd.AddCommand(InteractiveCmd)
 	RootCmd.AddCommand(CompletionsCmd)
-	// RootCmd.AddCommand(HelpCmd)
+
+	RootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
+	RootCmd.SetHelpCommand(HelpCmd)
+
+	RootCmd.CompletionOptions.DisableDefaultCmd = true
 }
