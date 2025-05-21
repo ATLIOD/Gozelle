@@ -1,20 +1,22 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/atliod/gozelle/internal/db"
+	"github.com/atliod/gozelle/internal/core"
+	"github.com/spf13/cobra"
 )
 
-func List() {
-	database, err := db.NewDirectoryManager()
-	if err != nil {
-		panic(err)
-	}
-
-	// Print the list of directories
-	for _, dir := range database.Entries {
-		fmt.Println("Path: ", dir.Path, "|Frequency Score:", dir.Score)
-		fmt.Println("-------------------------------------------------------------------------------")
-	}
+var ListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all directories in the store",
+	Long:  `List all directories in the store.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Call the list function from core package
+		err := core.List()
+		if err != nil {
+			log.Println("Error listing directories:", err)
+			return
+		}
+	},
 }
