@@ -28,13 +28,12 @@ COMMANDS:
 
 EXAMPLES:
   # Initialize shell integration
-  gozelle init bash
+  gozelle init <shell>  # e.g., bash, zsh, fish
 
   # Jump to a directory using a keyword
-  gz proj       # jumps to the best match (e.g., ~/projects)
-
+  gz <keyword> # Jump to the best match directory, e.g., 'gz projects' jumps to ~/Documents/projects
   # Show top match without jumping
-  gozelle query proj
+  gozelle query <keyword>
 
   # Add a directory manually
   gozelle add /some/path/to/add
@@ -45,16 +44,12 @@ EXAMPLES:
   # List all indexed directories
   gozelle list
 
-FEATURES:
-  - Frecency Scoring: Jump history is ranked by frequency and recency
-  - Fuzzy Matching: Jump with just a keyword or part of a directory name
-  - Smart Ranking: Most relevant paths surface first
-  - Manual Add: Add directories to the index yourself
-  - Query Mode: List matching directories without jumping
-  - Compact Storage: Gob-encoded data stored locally
-  - Shell Integration: Bash command-line hooks for seamless tracking
+Environment Variables:
+  GOZELLE_ECHO           Whether the top match is printed before navigation or no(false or true)
+  GOZELLE_DATA_DIR           The path where the data is stored (default: $XDG_DATA_HOME/gozelle/db.gob or ~/.local/share/gozelle/db.gob)
 
 For more information, visit the project repository.
+Github.com/atliod/gozelle
 `)
 	},
 }
