@@ -103,13 +103,13 @@ source ~/.config/fish/config.fish
 ### Jump to a Directory
 
 ```bash
-gz proj       # jumps to the best match (e.g., ~/projects)
+gz projects       # jumps to the best match (e.g., ~/Documents/School/Programming/projects)
 ```
 
 ### Show Matching Directories (without jumping)
 
 ```bash
-gozelle query proj
+gozelle query projects
 ```
 
 ### Add a Directory Manually
