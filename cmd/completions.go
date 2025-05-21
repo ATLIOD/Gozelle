@@ -24,13 +24,13 @@ Example:
 	RunE: func(cmd *cobra.Command, args []string) error {
 		switch args[0] {
 		case "bash":
-			return rootCmd.GenBashCompletion(os.Stdout)
+			return RootCmd.GenBashCompletion(os.Stdout)
 		case "zsh":
 			// Needed for Zsh completion to work
 			fmt.Fprintln(os.Stdout, "autoload -U compinit; compinit")
-			return rootCmd.GenZshCompletion(os.Stdout)
+			return RootCmd.GenZshCompletion(os.Stdout)
 		case "fish":
-			return rootCmd.GenFishCompletion(os.Stdout, true)
+			return RootCmd.GenFishCompletion(os.Stdout, true)
 		default:
 			return fmt.Errorf("unsupported shell: %s", args[0])
 		}
