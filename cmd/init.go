@@ -3,16 +3,14 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/atliod/gozelle/internal/core"
-
 	"github.com/spf13/cobra"
 )
 
 var InitCmd = &cobra.Command{
 	Use:   "init [shell]",
-	Short: "Generate shell integration",
+	Short: "Print shell init script with hooks and completions",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		shell := "bash"
@@ -23,23 +21,20 @@ var InitCmd = &cobra.Command{
 		switch shell {
 		case "bash":
 			go core.CleanStore()
-			fmt.Println(bashInitScript())
+			fmt.Print(bashInit)
 		case "zsh":
-			fmt.Println(zshInitScript())
+			fmt.Print(zshInit)
 		case "fish":
-			fmt.Println(fishInitScript())
+			fmt.Print(fishInit)
 		default:
-			fmt.Fprintf(os.Stderr, "unsupported shell: %s\n", shell)
+			fmt.Fprintf(os.Stderr, "Unsupported shell: %s\n", shell)
 			os.Exit(1)
 		}
 	},
 }
 
-// eval "$(gozelle init bash)"
-func bashInitScript() string {
-	return strings.TrimSpace(`
-# Gozelle Bash init script
-
+var bashInit = `
+# Gozelle Bash init
 __gozelle_oldpwd="$(pwd)"
 
 __gozelle_hook() {
@@ -69,17 +64,26 @@ gz() {
         target="$(command gozelle query "$@")" && cd "$target"
     fi
 }
+
 gi() {
-	target="$(command gozelle interactive "$@")" && cd "$target"
-}
-`)
+    target="$(command gozelle interactive "$@")" && cd "$target"
 }
 
-// eval "$(gozelle init zsh)"
-func zshInitScript() string {
-	return strings.TrimSpace(`
-# Gozelle Zsh init script (recommended chpwd hook version)
+# Gozelle Bash completions
+_complete_gozelle() {
+    local cur prev words cword split
+    _init_completion -s || return
 
+    COMPREPLY=( $( COMP_CWORD=$COMP_CWORD \
+                   COMP_LINE=$COMP_LINE \
+                   COMP_POINT=$COMP_POINT \
+                   gozelle completion bash ) )
+}
+complete -F _complete_gozelle gozelle
+`
+
+var zshInit = `
+# Gozelle Zsh init
 __gozelle_on_cd() {
     command gozelle add "$PWD" >/dev/null 2>&1
 }
@@ -100,17 +104,23 @@ gz() {
         target="$(command gozelle query "$@")" && cd "$target"
     fi
 }
+
 gi() {
-	target="$(command gozelle interactive "$@")" && cd "$target"
-}
-`)
+    target="$(command gozelle interactive "$@")" && cd "$target"
 }
 
-// eval (gozelle init fish)
-func fishInitScript() string {
-	return strings.TrimSpace(`
-# Gozelle Fish init script
+# Gozelle Zsh completions
+autoload -U compinit && compinit
+compdef _gozelle gozelle
+_gozelle() {
+    local completions
+    completions=("${(@f)$(gozelle completion zsh)}")
+    _describe 'values' completions
+}
+`
 
+var fishInit = `
+# Gozelle Fish init
 function __gozelle_prompt_hook --on-event fish_prompt
     if not set -q __gozelle_oldpwd
         set -g __gozelle_oldpwd $PWD
@@ -145,5 +155,7 @@ function gi
         cd "$target"
     end
 end
-`)
-}
+
+# Gozelle Fish completions
+complete -c gozelle -f -a '(gozelle completion fish)'
+`
