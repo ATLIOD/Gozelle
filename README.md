@@ -177,13 +177,13 @@ This project is a hands-on learning opportunity for:
 
 ## Roadmap
 
-- [x] Zsh support  
-- [x] Fish shell support  
-- [x] Interactive `fzf`-style selector  
+- [X] Zsh support  
+- [X] Fish shell support  
+- [X] Interactive `fzf`-style selector  
 - [X] Configurable data file location  
-- [x] Directory expiration / pruning logic  
+- [X] Directory expiration / pruning logic  
 - [X] Man Page  
-- [ ] Completion support
+- [X] Completion support
 
 [↑ Back to top](#Gozelle)
 
