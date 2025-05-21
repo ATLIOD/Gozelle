@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// InitCmd prints shell init script with hooks and completions
 var InitCmd = &cobra.Command{
 	Use:   "init [shell]",
 	Short: "Print shell init script with hooks and completions",
@@ -21,11 +22,23 @@ var InitCmd = &cobra.Command{
 		switch shell {
 		case "bash":
 			go core.CleanStore()
-			fmt.Print(bashInit)
+			fmt.Print(bashHooksAndFunctions)
+			if err := RootCmd.GenBashCompletion(os.Stdout); err != nil {
+				fmt.Fprintf(os.Stderr, "Error generating bash completions: %v\n", err)
+				os.Exit(1)
+			}
 		case "zsh":
-			fmt.Print(zshInit)
+			fmt.Print(zshHooksAndFunctions)
+			if err := RootCmd.GenZshCompletion(os.Stdout); err != nil {
+				fmt.Fprintf(os.Stderr, "Error generating zsh completions: %v\n", err)
+				os.Exit(1)
+			}
 		case "fish":
-			fmt.Print(fishInit)
+			fmt.Print(fishHooksAndFunctions)
+			if err := RootCmd.GenFishCompletion(os.Stdout, true); err != nil {
+				fmt.Fprintf(os.Stderr, "Error generating fish completions: %v\n", err)
+				os.Exit(1)
+			}
 		default:
 			fmt.Fprintf(os.Stderr, "Unsupported shell: %s\n", shell)
 			os.Exit(1)
@@ -33,7 +46,7 @@ var InitCmd = &cobra.Command{
 	},
 }
 
-var bashInit = `
+var bashHooksAndFunctions = `
 # Gozelle Bash init
 __gozelle_oldpwd="$(pwd)"
 
@@ -77,12 +90,12 @@ _complete_gozelle() {
     COMPREPLY=( $( COMP_CWORD=$COMP_CWORD \
                    COMP_LINE=$COMP_LINE \
                    COMP_POINT=$COMP_POINT \
-                   gozelle completion bash ) )
+                   gozelle completions bash ) )
 }
 complete -F _complete_gozelle gozelle
 `
 
-var zshInit = `
+var zshHooksAndFunctions = `
 # Gozelle Zsh init
 __gozelle_on_cd() {
     command gozelle add "$PWD" >/dev/null 2>&1
@@ -109,17 +122,10 @@ gi() {
     target="$(command gozelle interactive "$@")" && cd "$target"
 }
 
-# Gozelle Zsh completions
 autoload -U compinit && compinit
-compdef _gozelle gozelle
-_gozelle() {
-    local completions
-    completions=("${(@f)$(gozelle completion zsh)}")
-    _describe 'values' completions
-}
 `
 
-var fishInit = `
+var fishHooksAndFunctions = `
 # Gozelle Fish init
 function __gozelle_prompt_hook --on-event fish_prompt
     if not set -q __gozelle_oldpwd
@@ -157,5 +163,5 @@ function gi
 end
 
 # Gozelle Fish completions
-complete -c gozelle -f -a '(gozelle completion fish)'
+complete -c gozelle -f -a '(gozelle completions fish)'
 `

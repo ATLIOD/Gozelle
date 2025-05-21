@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -26,13 +25,12 @@ Example:
 		case "bash":
 			return RootCmd.GenBashCompletion(os.Stdout)
 		case "zsh":
-			// Needed for Zsh completion to work
-			fmt.Fprintln(os.Stdout, "autoload -U compinit; compinit")
 			return RootCmd.GenZshCompletion(os.Stdout)
 		case "fish":
 			return RootCmd.GenFishCompletion(os.Stdout, true)
 		default:
-			return fmt.Errorf("unsupported shell: %s", args[0])
+			return nil
 		}
 	},
+	Hidden: true,
 }
