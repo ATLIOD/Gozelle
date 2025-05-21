@@ -1,18 +1,23 @@
 package cmd
 
-import "github.com/atliod/gozelle/internal/db"
+import (
+	"log"
 
-func Remove(path string) {
-	database, err := db.NewDirectoryManager()
-	if err != nil {
-		panic(err)
-	}
+	"github.com/atliod/gozelle/internal/core"
+	"github.com/spf13/cobra"
+)
 
-	// find the path in the database
-	for i, dir := range database.Entries {
-		if dir.Path == path {
-			database.SwapRemoveIDX(i)
-			break
+var RemoveCmd = &cobra.Command{
+	Use:   "remove [path]",
+	Short: "Remove a directory from the store",
+	Long:  `Remove a directory from the store.`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		path := args[0]
+		if err := core.Remove(path); err != nil {
+			log.Println("Error removing path:", err)
+			return
 		}
-	}
+		core.Prune()
+	},
 }

@@ -1,28 +1,23 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/atliod/gozelle/internal/db"
+	"github.com/atliod/gozelle/internal/core"
+	"github.com/spf13/cobra"
 )
 
-func Add(path string) {
-	database, err := db.NewDirectoryManager()
-	if err != nil {
-		fmt.Println("Error initializing database:", err)
-		panic(err)
-	}
-
-	err = database.Add(path)
-	if err != nil {
-		fmt.Println("Error adding path:", err)
-		panic(err)
-	}
-
-	err = database.Save()
-	if err != nil {
-		fmt.Println("Error saving database:", err)
-		panic(err)
-	}
-	fmt.Print("Path added successfully: ", path, "\n")
+var AddCmd = &cobra.Command{
+	Use:   "add [path]",
+	Short: "Add a directory to the index",
+	Long:  `Add a directory to the index.`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		path := args[0]
+		if err := core.Add(path); err != nil {
+			log.Println("Error adding path:", err)
+			return
+		}
+		core.Prune()
+	},
 }
