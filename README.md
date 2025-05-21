@@ -34,7 +34,7 @@
 
 ## Requirements
 
-- [Bash](https://www.gnu.org/software/bash/) or [Zsh](https://www.zsh.org/) shell  
+- [Bash](https://www.gnu.org/software/bash/), [Zsh](https://www.zsh.org/), or [Fish](https://fishshell.com/) shell  
 - Gozelle binary in your `$PATH`  
 - go version 1.24+
 - [`fzf`](https://github.com/junegunn/fzf) installed for interactive mode
