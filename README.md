@@ -57,7 +57,7 @@ cd gozelle
 go build -o gozelle .
 sudo mv gozelle /usr/local/bin/
 ```
-`/usr/local/bin` can be replace by any direcotry in your `$PATH`
+`/usr/local/bin` can be replace by any directory in your `$PATH`
 
 ### Option 2: Use `go install`
 
