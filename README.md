@@ -1,6 +1,6 @@
 # Gozelle
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/cyber-mountain-man/statistical-go?t=1)](https://goreportcard.com/report/github.com/cyber-mountain-man/statistical-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ATLIOD/Gozelle?t=1)](https://goreportcard.com/report/github.com/ATLIOD/Gozelle)
 
 **Gozelle** is a lightning-fast, minimal directory-jumping tool written in Go — inspired by [`zoxide`](https://github.com/ajeetdsouza/zoxide). Jump to frequently used directories with just a keyword, powered by **frecency scoring**, **fuzzy matching**, and **shell integration**.
 
