@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ATLIOD/Gozelle?t=1)](https://goreportcard.com/report/github.com/ATLIOD/Gozelle)
 
-**Gozelle** is a lightning-fast, minimal directory-jumping tool written in Go — inspired by [`zoxide`](https://github.com/ajeetdsouza/zoxide). Jump to frequently used directories with just a keyword, powered by **frecency scoring**, **fuzzy matching**, and **shell integration**.
+**Gozelle** is a lightning-fast and minimal smart cd command written in Go — inspired by [`zoxide`](https://github.com/ajeetdsouza/zoxide). Jump to frequently used directories with just a keyword, powered by **frecency scoring**, **fuzzy matching**, and **shell integration**.
 
 ---
 
