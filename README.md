@@ -186,6 +186,8 @@ This project is a hands-on learning opportunity for:
 - [X] Directory expiration / pruning logic  
 - [X] Man Page  
 - [X] Completion support
+- [ ] Better pruning logic
+- [ ] Higher weight to paths where the keyword is closer to the end
 
 [↑ Back to top](#Gozelle)
 
