@@ -121,7 +121,7 @@ gozelle add /some/path/to/add
 ```
 ### Interactive Mode
 ```bash
-gzi
+gi
 ```
 
 [↑ Back to top](#Gozelle)
