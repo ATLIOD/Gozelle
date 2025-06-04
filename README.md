@@ -92,7 +92,7 @@ source ~/.zshrc
 For **Fish**:
 
 ```bash
-echo 'eval (gozelle init fish)' >> ~/.config/fish/config.fish
+echo 'gozelle init fish | source' >> ~/.config/fish/config.fish
 source ~/.config/fish/config.fish
 ```
 
