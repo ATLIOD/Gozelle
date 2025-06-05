@@ -8,7 +8,11 @@ import (
 // MatchByKeywords checks if the path contains all the keywords in order.
 func MatchByKeywords(path string, keywords []string) bool {
 	if len(keywords) == 0 {
-		return true
+		return false
+	}
+
+	if len(path) == 0 {
+		return false
 	}
 
 	path = strings.ToLower(path)
