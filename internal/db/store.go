@@ -15,7 +15,7 @@ type DataStore interface {
 	Open(filePath string) (*[]byte, error)
 	Decode(data *[]byte) error
 	Encode(entries []*Directory) ([]byte, error)
-	Add(path string) error // Adds to memory only
+	Add(path string) error        // Adds to memory only
 	AddAndSave(path string) error // Adds and persists
 	Get(path string) (*Directory, error)
 	All() ([]*Directory, error)
@@ -25,7 +25,7 @@ type DataStore interface {
 	AddUpdate(dir string) error
 	Remove(path string) error // Takes string path for consistency
 	DetermineFilthy() error
-	SwapRemoveIDX(idx int) error // Remove by index, O(1)
+	SwapRemoveIDX(idx int) error  // Remove by index, O(1)
 	SwapRemove(path string) error // Remove by path, O(1) if found
 }
 
@@ -81,7 +81,7 @@ func (dm *DirectoryManager) Open(filePath string) (*[]byte, error) {
 			log.Printf("[ERROR] Open: failed to create empty file %s: %v", filePath, err)
 			return nil, fmt.Errorf("failed to create file: %w", err)
 		}
-		log.Printf("[DEBUG] Open: Created new empty db file at %s", filePath)
+		// log.Printf("[DEBUG] Open: Created new empty db file at %s", filePath)
 		return &[]byte{}, nil // Return empty byte slice for new file
 	}
 
@@ -100,7 +100,7 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 
 	if data == nil || len(*data) == 0 {
 		dm.Entries = []*Directory{}
-		log.Println("[DEBUG] Decode: No data found, initializing empty directory manager.")
+		// log.Println("[DEBUG] Decode: No data found, initializing empty directory manager.")
 		return nil
 	}
 
@@ -112,7 +112,7 @@ func (dm *DirectoryManager) Decode(data *[]byte) error {
 		return fmt.Errorf("failed to decode data: %w", err)
 	}
 	dm.Entries = decodedEntries
-	log.Printf("[DEBUG] Decode: Decoded %d entries.", len(dm.Entries))
+	// log.Printf("[DEBUG] Decode: Decoded %d entries.", len(dm.Entries))
 	return nil
 }
 
@@ -140,7 +140,7 @@ func (dm *DirectoryManager) Add(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
 
-	log.Printf("[DEBUG] Add: adding path '%s' to memory", path)
+	// log.Printf("[DEBUG] Add: adding path '%s' to memory", path)
 	dir := NewDirectory(path)
 	dm.Entries = append(dm.Entries, dir)
 	dm.Dirty = true
@@ -154,7 +154,7 @@ func (dm *DirectoryManager) AddAndSave(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
 
-	log.Printf("[DEBUG] AddAndSave: adding path '%s' and saving", path)
+	// log.Printf("[DEBUG] AddAndSave: adding path '%s' and saving", path)
 	dir := NewDirectory(path)
 	dm.Entries = append(dm.Entries, dir)
 	dm.Dirty = true // Mark dirty before saveInternal checks it
@@ -194,17 +194,17 @@ func (dm *DirectoryManager) All() ([]*Directory, error) {
 func (dm *DirectoryManager) Save() error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	log.Println("[DEBUG] Save: acquiring lock (public Save called)")
+	// log.Println("[DEBUG] Save: acquiring lock (public Save called)")
 	return dm.saveInternal()
 }
 
 // saveInternal is the actual save logic, assumes lock is already held by the caller.
 func (dm *DirectoryManager) saveInternal() error {
 	if !dm.Dirty {
-		log.Println("[DEBUG] saveInternal: Not dirty, skipping save.")
+		// log.Println("[DEBUG] saveInternal: Not dirty, skipping save.")
 		return nil
 	}
-	log.Println("[DEBUG] saveInternal: Encoding data.")
+	// log.Println("[DEBUG] saveInternal: Encoding data.")
 	encodedData, err := dm.Encode(dm.Entries) // Encode reads dm.Entries
 	if err != nil {
 		// Error already logged in Encode
@@ -212,7 +212,7 @@ func (dm *DirectoryManager) saveInternal() error {
 	}
 
 	tempFilePath := dm.FilePath + ".tmp"
-	log.Printf("[DEBUG] saveInternal: Writing %d bytes to temporary file %s", len(encodedData), tempFilePath)
+	// log.Printf("[DEBUG] saveInternal: Writing %d bytes to temporary file %s", len(encodedData), tempFilePath)
 	err = os.WriteFile(tempFilePath, encodedData, 0644)
 	if err != nil {
 		log.Printf("[ERROR] saveInternal: failed to write to temp file %s: %v", tempFilePath, err)
@@ -221,7 +221,7 @@ func (dm *DirectoryManager) saveInternal() error {
 		return fmt.Errorf("failed to write to temporary file %s: %w", tempFilePath, err)
 	}
 
-	log.Printf("[DEBUG] saveInternal: Renaming temporary file %s to %s", tempFilePath, dm.FilePath)
+	// log.Printf("[DEBUG] saveInternal: Renaming temporary file %s to %s", tempFilePath, dm.FilePath)
 	err = os.Rename(tempFilePath, dm.FilePath)
 	if err != nil {
 		log.Printf("[ERROR] saveInternal: failed to rename temp file %s to %s: %v", tempFilePath, dm.FilePath, err)
@@ -231,7 +231,7 @@ func (dm *DirectoryManager) saveInternal() error {
 	dm.Dirty = false
 	dm.raw = make([]byte, len(encodedData)) // Update raw with the successfully saved data
 	copy(dm.raw, encodedData)
-	log.Println("[DEBUG] saveInternal: Save successful.")
+	// log.Println("[DEBUG] saveInternal: Save successful.")
 	return nil
 }
 
@@ -239,10 +239,10 @@ func (dm *DirectoryManager) saveInternal() error {
 func (dm *DirectoryManager) Dedup() error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	log.Println("[DEBUG] Dedup: Performing deduplication.")
+	// log.Println("[DEBUG] Dedup: Performing deduplication.")
 
 	if len(dm.Entries) < 2 {
-		log.Println("[DEBUG] Dedup: Not enough entries to dedup.")
+		// log.Println("[DEBUG] Dedup: Not enough entries to dedup.")
 		return nil // Nothing to dedup
 	}
 	dm.SortByDirectory() // SortByDirectory doesn't lock, called under dm.mu
@@ -269,11 +269,11 @@ func (dm *DirectoryManager) Dedup() error {
 
 	if originalCount != len(dm.Entries) {
 		dm.Dirty = true // Also dirty if count changed
-		log.Printf("[DEBUG] Dedup: Reduced entries from %d to %d.", originalCount, len(dm.Entries))
+		// log.Printf("[DEBUG] Dedup: Reduced entries from %d to %d.", originalCount, len(dm.Entries))
 	} else if dm.Dirty { // If only scores/visits updated
-		log.Println("[DEBUG] Dedup: Updated scores/visits for duplicate paths.")
+		// log.Println("[DEBUG] Dedup: Updated scores/visits for duplicate paths.")
 	} else {
-		log.Println("[DEBUG] Dedup: No duplicates found or changes made.")
+		// log.Println("[DEBUG] Dedup: No duplicates found or changes made.")
 	}
 
 	// Decide if Dedup should save. If it made changes, it should probably save.
@@ -299,7 +299,7 @@ func (dm *DirectoryManager) SortByDirectory() error {
 // This is equivalent to AddAndSave and is provided for API compatibility.
 // AddUpdate adds a directory to the directory manager and immediately persists it to file.
 func (dm *DirectoryManager) AddUpdate(dir string) error {
-	log.Printf("[DEBUG] AddUpdate: adding path '%s'", dir)
+	// log.Printf("[DEBUG] AddUpdate: adding path '%s'", dir)
 	return dm.AddAndSave(dir)
 }
 
@@ -320,19 +320,19 @@ func (dm *DirectoryManager) RemoveIDX(idx int) error {
 func (dm *DirectoryManager) Remove(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	log.Printf("[DEBUG] Remove: Attempting to remove path '%s'", path)
+	// log.Printf("[DEBUG] Remove: Attempting to remove path '%s'", path)
 
 	dm.SortByDirectory() // Sort to use binarySearch
 	idx := binarySearch(dm.Entries, path)
 
 	if idx == -1 {
-		log.Printf("[DEBUG] Remove: Path '%s' not found.", path)
+		// log.Printf("[DEBUG] Remove: Path '%s' not found.", path)
 		return fmt.Errorf("directory not found for removal: %s", path)
 	}
 
 	dm.Entries = append(dm.Entries[:idx], dm.Entries[idx+1:]...)
 	dm.Dirty = true
-	log.Printf("[DEBUG] Remove: Path '%s' removed, saving.", path)
+	// log.Printf("[DEBUG] Remove: Path '%s' removed, saving.", path)
 	return dm.saveInternal()
 }
 
@@ -363,7 +363,7 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	log.Printf("[DEBUG] SwapRemoveIDX: Attempting to remove index %d", idx)
+	// log.Printf("[DEBUG] SwapRemoveIDX: Attempting to remove index %d", idx)
 
 	if idx < 0 || idx >= len(dm.Entries) {
 		return fmt.Errorf("SwapRemoveIDX: index %d out of range for %d entries", idx, len(dm.Entries))
@@ -373,7 +373,7 @@ func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
 	dm.Entries[idx], dm.Entries[lastIdx] = dm.Entries[lastIdx], dm.Entries[idx]
 	dm.Entries = dm.Entries[:lastIdx]
 	dm.Dirty = true
-	log.Printf("[DEBUG] SwapRemoveIDX: Index %d removed, saving.", idx)
+	// log.Printf("[DEBUG] SwapRemoveIDX: Index %d removed, saving.", idx)
 	return dm.saveInternal()
 }
 
@@ -382,7 +382,7 @@ func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
 func (dm *DirectoryManager) SwapRemove(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	log.Printf("[DEBUG] SwapRemove: Attempting to remove path '%s'", path)
+	// log.Printf("[DEBUG] SwapRemove: Attempting to remove path '%s'", path)
 
 	// This makes SwapRemove O(N log N) or O(N) due to search, not O(1) unless path is pre-indexed.
 	// For true O(1) by path, a map[string]int would be needed to store indices.
@@ -396,17 +396,17 @@ func (dm *DirectoryManager) SwapRemove(path string) error {
 	}
 
 	if idxToSwap == -1 {
-		log.Printf("[DEBUG] SwapRemove: Path '%s' not found.", path)
+		// log.Printf("[DEBUG] SwapRemove: Path '%s' not found.", path)
 		return fmt.Errorf("directory not found for swap-removal: %s", path)
 	}
-	
+
 	// Now perform the O(1) removal part using the found index
 	lastIdx := len(dm.Entries) - 1
 	if idxToSwap <= lastIdx {
 		dm.Entries[idxToSwap], dm.Entries[lastIdx] = dm.Entries[lastIdx], dm.Entries[idxToSwap]
 		dm.Entries = dm.Entries[:lastIdx]
 		dm.Dirty = true
-		log.Printf("[DEBUG] SwapRemove: Path '%s' (index %d) removed, saving.", path, idxToSwap)
+		// log.Printf("[DEBUG] SwapRemove: Path '%s' (index %d) removed, saving.", path, idxToSwap)
 		return dm.saveInternal()
 	}
 	// Should not happen if idxToSwap was valid and list not empty
