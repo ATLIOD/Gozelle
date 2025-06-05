@@ -187,7 +187,7 @@ This project is a hands-on learning opportunity for:
 - [X] Man Page  
 - [X] Completion support
 - [ ] Better pruning logic
-- [ ] Higher weight to paths where the keyword is closer to the end
+- [X] Higher weight to paths where the keyword is closer to the end
 
 [↑ Back to top](#Gozelle)
 
