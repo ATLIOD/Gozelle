@@ -25,7 +25,7 @@ func TestQueryTop(t *testing.T) {
 		t.Fatalf("expected a match, got nil")
 	}
 	if bestMatch.Path.Path != "/path1/test" {
-		t.Fatalf("expected path /path1/test, got %s", bestMatch.Path.Path)
+		t.Fatalf("expected path /path1/test/, got %s", bestMatch.Path.Path)
 	}
 	if bestMatch.Frecency <= 0 {
 		t.Fatalf("expected positive frecency, got %f", bestMatch.Frecency)
@@ -64,8 +64,8 @@ func TestQueryTop(t *testing.T) {
 	if bestMatch.Path == nil {
 		t.Fatalf("expected a match, got nil")
 	}
-	if bestMatchDifferent.Path.Path != "/different/test" {
-		t.Fatalf("expected path /different/test, got %s", bestMatch.Path.Path)
+	if bestMatchDifferent.Path.Path != "/path5/different" {
+		t.Fatalf("expected path /path5/different, got %s", bestMatch.Path.Path)
 	}
 	if bestMatchDifferent.Frecency <= 0 {
 		t.Fatalf("expected positive frecency, got %f", bestMatch.Frecency)

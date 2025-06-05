@@ -11,6 +11,10 @@ func (dm *DirectoryManager) DeleteTestStore() error {
 	if err != nil {
 		return fmt.Errorf("failed to delete test store: %w", err)
 	}
+	err = os.Remove(dm.FilePath + ".tmp")
+	if err != nil {
+		return fmt.Errorf("failed to delete temp test store: %w", err)
+	}
 	return nil
 }
 
@@ -28,7 +32,7 @@ func (dm *DirectoryManager) QueryDummyData() {
 	dm.Add("/path2/test")
 	dm.Add("/path3/test")
 	dm.Add("/path4/test")
-	dm.Add("/different/test")
+	dm.Add("/path5/different")
 
 	// increase the score of the first path
 	dm.Entries[0].Score = 4
