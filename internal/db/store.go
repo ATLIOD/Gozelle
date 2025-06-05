@@ -16,6 +16,7 @@ type DataStore interface {
 	Decode(data *[]byte) error
 	Encode(entries []*Directory) ([]byte, error)
 	Add(path string) error
+	AddAndSave(path string) error
 	Get(path string) (*Directory, error)
 	All() ([]Directory, error)
 	Save() error
@@ -147,12 +148,27 @@ func (dm *DirectoryManager) Encode(entries []*Directory) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// add new directory to directory manager and updates the file
+// Add adds a new directory to the directory manager in memory only.
+// It marks the manager as Dirty but does NOT persist changes to disk.
+// Call Save() to persist or use AddAndSave for immediate persistence.
 func (dm *DirectoryManager) Add(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
 
 	log.Printf("[DEBUG] Add: adding path %s", path)
+	dir := NewDirectory(path)
+	dm.Entries = append(dm.Entries, dir)
+	dm.Dirty = true
+	return nil
+}
+
+// AddAndSave adds a new directory and immediately saves the directory manager to disk.
+// This is the legacy behavior of Add prior to v0.2.0.
+func (dm *DirectoryManager) AddAndSave(path string) error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+
+	log.Printf("[DEBUG] AddAndSave: adding path %s", path)
 	dir := NewDirectory(path)
 	dm.Entries = append(dm.Entries, dir)
 	dm.Dirty = true
@@ -211,6 +227,7 @@ func (dm *DirectoryManager) saveInternal() error {
 	err = os.WriteFile(tempFilePath, encodedData, 0644)
 	if err != nil {
 		log.Printf("[DEBUG] saveInternal: failed to write to temp file: %v", err)
+		_ = os.Remove(tempFilePath) // Clean up temp file if it was created
 		return fmt.Errorf("failed to write to temporary file %s: %w", tempFilePath, err)
 	}
 
@@ -266,11 +283,10 @@ func (dm *DirectoryManager) SortByDirectory() error {
 	return nil
 }
 
-// AddUpdate adds a directory to the directory manager and then saves it to file
+// AddUpdate adds a directory to the directory manager and immediately persists it to file.
+// This is equivalent to AddAndSave and is provided for API compatibility.
 func (dm *DirectoryManager) AddUpdate(dir string) error {
-	dm.Add(dir)
-	dm.Save()
-	return nil
+	return dm.AddAndSave(dir)
 }
 
 func (dm *DirectoryManager) RemoveIDX(idx int) error {
