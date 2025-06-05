@@ -152,10 +152,11 @@ func (dm *DirectoryManager) Add(path string) error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
 
+	log.Printf("[DEBUG] Add: adding path %s", path)
 	dir := NewDirectory(path)
 	dm.Entries = append(dm.Entries, dir)
 	dm.Dirty = true
-	if err := dm.Save(); err != nil {
+	if err := dm.saveInternal(); err != nil {
 		return fmt.Errorf("failed to save directory manager: %w", err)
 	}
 	return nil
@@ -186,20 +187,46 @@ func (dm *DirectoryManager) All() ([]*Directory, error) {
 
 // saves the directory manager to a file
 func (dm *DirectoryManager) Save() error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	log.Println("[DEBUG] Save: acquiring lock (public Save called)")
+	return dm.saveInternal()
+}
+
+// saveInternal is the actual save logic, assumes lock is already held
+func (dm *DirectoryManager) saveInternal() error {
 	if !dm.Dirty {
+		log.Println("[DEBUG] saveInternal: Not dirty, skipping save.")
 		return nil
 	}
+	log.Println("[DEBUG] saveInternal: Encoding data.")
 	encodedData, err := dm.Encode(dm.Entries)
 	if err != nil {
+		log.Printf("[DEBUG] saveInternal: failed to encode directory manager: %v", err)
 		return fmt.Errorf("failed to encode directory manager: %w", err)
 	}
-	err = os.WriteFile(dm.FilePath, encodedData, 0644)
+
+	tempFilePath := dm.FilePath + ".tmp"
+	log.Println("[DEBUG] saveInternal: Writing to temporary file", tempFilePath)
+	err = os.WriteFile(tempFilePath, encodedData, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write to file: %w", err)
+		log.Printf("[DEBUG] saveInternal: failed to write to temp file: %v", err)
+		return fmt.Errorf("failed to write to temporary file %s: %w", tempFilePath, err)
 	}
+
+	log.Println("[DEBUG] saveInternal: Renaming temporary file to", dm.FilePath)
+	err = os.Rename(tempFilePath, dm.FilePath)
+	if err != nil {
+		log.Printf("[DEBUG] saveInternal: failed to rename temp file: %v", err)
+		_ = os.Remove(tempFilePath)
+		return fmt.Errorf("failed to rename temporary file %s to %s: %w", tempFilePath, dm.FilePath, err)
+	}
+
 	dm.Dirty = false
+	log.Println("[DEBUG] saveInternal: Save successful.")
 	// update the raw data after saving
-	dm.raw, _ = dm.Encode(dm.Entries)
+	dm.raw = make([]byte, len(encodedData))
+	copy(dm.raw, encodedData)
 
 	return nil
 }
@@ -208,9 +235,8 @@ func (dm *DirectoryManager) Save() error {
 func (dm *DirectoryManager) Dedup() error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-
+	log.Println("[DEBUG] Dedup: acquiring lock")
 	dm.SortByDirectory()
-
 	for i := 0; i < len(dm.Entries)-1; {
 		if dm.Entries[i].Path == dm.Entries[i+1].Path {
 			dm.Entries[i].Score += dm.Entries[i+1].Score
@@ -227,6 +253,10 @@ func (dm *DirectoryManager) Dedup() error {
 			i++
 		}
 	}
+	// Optionally persist dedup changes immediately:
+	// if dm.Dirty {
+	//     return dm.saveInternal()
+	// }
 	return nil
 }
 
@@ -283,6 +313,10 @@ func (dm *DirectoryManager) DetermineFilthy() error {
 // SwapRemove removes a directory from the directory manager and updates the file
 // useful because it makes removal 0(1) instead of O(n)
 func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	log.Println("[DEBUG] SwapRemoveIDX: acquiring lock")
+
 	if idx < 0 || idx >= len(dm.Entries) {
 		return fmt.Errorf("index out of range: %d", idx)
 	}
@@ -293,7 +327,7 @@ func (dm *DirectoryManager) SwapRemoveIDX(idx int) error {
 	dm.Entries[idx], dm.Entries[len(dm.Entries)-1] = dm.Entries[len(dm.Entries)-1], dm.Entries[idx]
 	dm.Entries = dm.Entries[:len(dm.Entries)-1]
 	dm.Dirty = true
-	return nil
+	return dm.saveInternal()
 }
 
 func (dm *DirectoryManager) SwapRemove(dir string) error {
