@@ -19,7 +19,7 @@ func SetConfig() {
 	}
 
 	// echo decides whether path is printed to stdout
-	val = os.Getenv("GOZELLE_MINIMUM")
+	val = os.Getenv("GOZELLE_MINIMUM_WEIGHT")
 	if val == "" {
 		os.Setenv("GOZELLE_MINIMUM_WEIGHT", "0.1")
 	} else {
