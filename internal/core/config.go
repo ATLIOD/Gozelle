@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func SetConfig() {
@@ -15,6 +16,20 @@ func SetConfig() {
 	} else if val != "false" && val != "true" {
 		fmt.Println("GOZELLE_ECHO must be true or false")
 		os.Setenv("GOZELLE_ECHO", "false")
+	}
+
+	// echo decides whether path is printed to stdout
+	val = os.Getenv("GOZELLE_MINIMUM")
+	if val == "" {
+		os.Setenv("GOZELLE_MINIMUM_WEIGHT", "0.1")
+	} else {
+		_, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			fmt.Println("GOZELLE_MINIMUM_WEIGHT must be a valid float")
+			os.Setenv("GOZELLE_ECHO", "0.1")
+		} else {
+			os.Setenv("GOZELLE_MINIMUM_WEIGHT", val)
+		}
 	}
 
 	var filePath string
