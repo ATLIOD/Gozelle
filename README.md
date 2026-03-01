@@ -64,7 +64,7 @@ sudo mv gozelle /usr/local/bin/
 ### Option 2: Use `go install`
 
 ```bash
-go install github.com/ATLIOD/Gozelle@latest
+go install github.com/atliod/gozelle@latest
 ```
 
 Make sure your `$GOPATH/bin` is in your `$PATH` (commonly `~/go/bin`):
