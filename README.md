@@ -14,8 +14,9 @@
 - [Usage](#Usage)
 - [Environment Variables](#Environment-Variables)
 - [How It Works](#How-it-works)
-- [Learnings & Concepts](#Learnings--concepts)
+- [Motivation](#Motivation)
 - [Roadmap](#Roadmap)
+- [Contributing](#Contributing)
 - [License](#License)
 
 ---
@@ -162,9 +163,9 @@ export GOZELLE_DATA_DIR="$HOME/.config/gozelle"
 
 ---
 
-## Learnings & Concepts
+## Motivation
 
-This project is a hands-on learning opportunity for:
+This project was a hands-on learning opportunity for:
 
 - **Concurrency** — handling simultaneous updates and queries efficiently  
 - **Worker Pools** — to process background updates to scoring  
@@ -190,6 +191,35 @@ This project is a hands-on learning opportunity for:
 - [X] Higher weight to paths where the keyword is closer to the end
 
 [↑ Back to top](#Gozelle)
+
+---
+
+## Contributing
+
+### Clone the repo
+
+```bash
+git clone https://github.com/ATLIOD/Gozelle@latest
+cd Gozelle
+```
+
+### Build the compiled binary
+
+```bash
+go build
+```
+
+### Run the test suite
+
+**Note:** Add regression test when applicable
+
+```bash
+go test ./...
+```
+
+### Submit a pull request
+
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
 
 ---
 
