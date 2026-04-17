@@ -55,7 +55,7 @@
 ### Option 1: Build from Source
 
 ```bash
-git clone https://github.com/yourusername/gozelle
+git clone https://github.com/atliod/gozelle
 cd gozelle
 go build -o gozelle .
 sudo mv gozelle /usr/local/bin/
