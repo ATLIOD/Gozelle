@@ -10,7 +10,7 @@
 
 - [Features](#Features)
 - [Requirements](#Requirements)
-- [Quick Start](#Quick Start)
+- [Quick Start](#Quick-Start)
 - [Usage](#Usage)
 - [Environment Variables](#Environment-Variables)
 - [How It Works](#How-it-works)
