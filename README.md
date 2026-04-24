@@ -14,6 +14,7 @@
 - [Usage](#Usage)
 - [Environment Variables](#Environment-Variables)
 - [How It Works](#How-it-works)
+- [Efficiency](#Efficiency)
 - [Motivation](#Motivation)
 - [Roadmap](#Roadmap)
 - [Contributing](#Contributing)
@@ -158,6 +159,50 @@ export GOZELLE_DATA_DIR="$HOME/.config/gozelle"
 - Finds all matches for keywords entered, e.g., `gz keywords`  
 - Ranks them using a **frecency** score (frequency + recency)
 - Uses fzf to provide an interactive selection UI when requested
+
+[↑ Back to top](#Gozelle)
+
+---
+
+## Efficiency
+
+Gozelle is designed to reduce the number of manual shell navigation commands you type every day.
+
+### Estimated Navigation Command Reduction
+
+| Usage Pattern | Estimated Reduction |
+|---|---|
+| Light (occasional directory switching) | 10–25% |
+| Moderate (regular jumps across a handful of projects) | 30–50% |
+| Heavy (frequent hops across many nested folders and repos) | 60–80% |
+
+For an active terminal user, a **~40–60% reduction in navigation commands** is a reasonable headline estimate.
+
+### Example
+
+Without Gozelle, reaching a deeply nested project might look like:
+
+```bash
+cd ~
+cd Documents/work/clients/acme/backend/src
+```
+
+With Gozelle, the same jump becomes:
+
+```bash
+gz acme
+```
+
+Commands like `cd`, `cd ..`, `cd ../../..`, `pwd`, and `ls` used purely for orientation are largely replaced by a single `gz <keyword>` call.
+
+### Why It Helps
+
+- **Fewer keystrokes** — no need to type or remember long absolute paths  
+- **Fewer orientation commands** — `pwd` and `ls` calls drop when you land exactly where you intend  
+- **Fewer mistakes** — fuzzy matching tolerates typos and partial names  
+- **Faster context switching** — frecency scoring surfaces the most relevant directory first
+
+> "Hypothetically, Gozelle could reduce manual shell navigation commands by roughly 40–60% for users who frequently switch between directories."
 
 [↑ Back to top](#Gozelle)
 
